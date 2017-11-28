@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bigger_front_size">20sp</dimen>
+    <dimen name="smaller_front_size">16sp</dimen>
+    <dimen name="toobar_height">54dp</dimen>
+    <dimen name="topbar_padding">40dp</dimen>
+</resources>
