@@ -2,11 +2,10 @@ package com.android.picshow.app;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 
 import picshow.android.com.R;
 
-public class PicShowActivity extends AppCompatActivity {
+public class PicShowActivity extends BaseActivity {
 
     private ViewPager vPager;
 
@@ -14,12 +13,21 @@ public class PicShowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.picshow_main);
+        if(isPermissionGranted()) {
+            initView();
+        }
     }
 
     private void initView(){}
 
 
+    @Override
+    protected void onGetPermissionsFailure() {
+        finish();
+    }
 
-
-
+    @Override
+    protected void onGetPermissionsSuccess() {
+        initView();
+    }
 }
