@@ -1,15 +1,14 @@
 package com.android.picshow.app;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 
-import java.util.ArrayList;
+import com.android.picshow.utils.LogPrinter;
+import com.android.picshow.utils.PageFactory;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -17,84 +16,49 @@ import java.util.ArrayList;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends PermissionActivity {
 
-    public static final int PERMISSION_REQUEST_STORAGE = 1;
-    private boolean permissionGranted = false;
-
-    protected abstract void onGetPermissionsSuccess();
-    protected abstract void onGetPermissionsFailure();
-
+    private static final String TAG = "BaseActivity";
+    Button btn_Album,btn_Photo;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        requestStoragePermission();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setTitle("");
+        //updateStatusBar();
     }
 
-    private void requestStoragePermission() {
-        String[] permissions = {
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE
-        };
-        requestPermission(permissions, PERMISSION_REQUEST_STORAGE);
-    }
+    protected void changeButtonSelectedStatus(int index) {
+        LogPrinter.i(TAG,"changeButtonSelectedStatus:"+index);
+        switch (index) {
+            case PageFactory.INDEX_ALBUMSET:
+                if(btn_Album != null)
+                    btn_Album.setAlpha(1.0f);
+                if(btn_Photo != null)
+                    btn_Photo.setAlpha(0.5f);
+                return;
 
-    protected void requestPermission(String[] permissions, int requestCode) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            permissionGranted = true;
-            return;
-        }
-
-        boolean needRequest = false;
-        ArrayList<String> permissionList = new ArrayList<String>();
-        for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                permissionList.add(permission);
-                needRequest = true;
-            }
-        }
-
-        if (needRequest) {
-            int count = permissionList.size();
-            if (count > 0) {
-                String[] permissionArray = new String[count];
-                for (int i = 0; i < count; i++) {
-                    permissionArray[i] = permissionList.get(i);
-                }
-
-                requestPermissions(permissionArray, requestCode);
-            }
-        }
-        permissionGranted = !needRequest;
-    }
-
-    private boolean checkPermissionGrantResults(int[] grantResults) {
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionGranted = checkPermissionGrantResults(grantResults);
-        switch (requestCode) {
-            case PERMISSION_REQUEST_STORAGE: {
-                if (permissionGranted) {
-                    onGetPermissionsSuccess();
-                } else {
-                    onGetPermissionsFailure();
-                }
-            }
+            case PageFactory.INDEX_TIMELINE:
+                if(btn_Album != null)
+                    btn_Album.setAlpha(0.5f);
+                if(btn_Photo != null)
+                    btn_Photo.setAlpha(1.0f);
+                return;
         }
     }
 
-    protected boolean isPermissionGranted() {
-        return permissionGranted;
+    private void updateStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
     }
+
 
 }

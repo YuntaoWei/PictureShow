@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PicShow</string>
+    <string name="btn_photo">Photo</string>
+    <string name="btn_album">Album</string>
 </resources>

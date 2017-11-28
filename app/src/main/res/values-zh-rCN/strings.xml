@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">图片浏览</string>
+    <string name="btn_photo">照片</string>
+    <string name="btn_album">相册</string>
+</resources>
