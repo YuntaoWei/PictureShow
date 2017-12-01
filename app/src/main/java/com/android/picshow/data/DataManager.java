@@ -8,6 +8,4 @@ package com.android.picshow.data;
 
 public class DataManager {
 
-
-
 }
