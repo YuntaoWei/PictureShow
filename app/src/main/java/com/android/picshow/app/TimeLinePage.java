@@ -1,11 +1,15 @@
 package com.android.picshow.app;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.ListAdapter;
 
 import com.android.picshow.R;
 import com.android.picshow.data.PhotoItem;
@@ -21,8 +25,15 @@ import com.android.picshow.utils.LogPrinter;
 public class TimeLinePage extends Fragment {
 
     private static final String TAG = "TimeLinePage";
+    public static final int UPDATE = 0x111;
+
+
     private TimeLinePageDataLoader.LoadListener myLoadListener;
     private TimeLinePageDataLoader dataLoader;
+    private Handler mainHandler;
+    private View rootView;
+    private GridView gridView;
+    private ListAdapter gridAdapter;
 
 
     @Override
@@ -34,17 +45,20 @@ public class TimeLinePage extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        dataLoader.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        dataLoader.pause();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.picshow_timeline,null);
+        rootView = v;
         return v;
     }
 
@@ -85,6 +99,27 @@ public class TimeLinePage extends Fragment {
             }
         };
         dataLoader = new TimeLinePageDataLoader(getContext(),myLoadListener);
+
+        mainHandler = new Handler() {
+
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case UPDATE:
+
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
+
+        };
+    }
+
+    private void initView() {
+        gridView = (GridView) rootView.findViewById(R.id.grid);
     }
 
 }
