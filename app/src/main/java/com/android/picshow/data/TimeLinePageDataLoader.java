@@ -1,5 +1,6 @@
 package com.android.picshow.data;
 
+import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
@@ -9,6 +10,7 @@ import com.android.picshow.utils.MediaSetUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by yuntao.wei on 2017/11/30.
@@ -20,6 +22,9 @@ public class TimeLinePageDataLoader {
 
     private Context mContext;
     private LoadListener mListener;
+    private AsyncQueryHandler queryHandler;
+    private Semaphore mSemaphore;
+    private LoadThread loadTask;
 
 
 
@@ -37,32 +42,67 @@ public class TimeLinePageDataLoader {
     }
 
     public void resume() {
-        ArrayList<PhotoItem> items = new ArrayList<>();
-        queryImages(items);
-        queryVideo(items);
-        PhotoItem[] allItem = new PhotoItem[items.size()];
-        items.toArray(allItem);
-        Arrays.sort(allItem, new Comparator<PhotoItem>() {
+        if(loadTask == null) {
+            loadTask = new LoadThread();
+        }
+        loadTask.start();
 
-            @Override
-            public int compare(PhotoItem o1, PhotoItem o2) {
-                return (int)(o1.getDateToken() - o2.getDateToken());
-            }
-
-        });
-
+        if(mSemaphore == null) {
+            mSemaphore = new Semaphore(0);
+        }
+        mSemaphore.release();
     }
 
     public void pause() {
+        loadTask.stopTask();
+        loadTask = null;
+        mSemaphore.release();
+        mSemaphore = null;
+    }
 
+    private void reloadData() {
+        if(mSemaphore != null)
+            mSemaphore.release();
     }
 
     private class LoadThread extends Thread {
 
+        private boolean stopTask = false;
+
         public LoadThread() {}
+
+        public void stopTask() {
+            stopTask = true;
+        }
 
         @Override
         public void run() {
+            while (true) {
+                try {
+                    mSemaphore.acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(stopTask) {
+                    return;
+                }
+                mListener.startLoad();
+                ArrayList<PhotoItem> items = new ArrayList<>();
+                queryImages(items);
+                queryVideo(items);
+                PhotoItem[] allItem = new PhotoItem[items.size()];
+                items.toArray(allItem);
+                Arrays.sort(allItem, new Comparator<PhotoItem>() {
+
+                    @Override
+                    public int compare(PhotoItem o1, PhotoItem o2) {
+                        return (int) (o1.getDateToken() - o2.getDateToken());
+                    }
+
+                });
+                mListener.finishLoad(allItem);
+            }
+
         }
     }
 
