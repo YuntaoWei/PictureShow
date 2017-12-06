@@ -29,7 +29,7 @@ public class MediaSetUtils {
     public static final int INDEX_DATE = 3;
 
     public static final String WHERE = MediaStore.Images.Media.BUCKET_ID +" = ?";
-    public static final String SORT_ODER = "DESC max(datetaken)";
+    public static final String SORT_ODER = "datetaken DESC";
 
 
 

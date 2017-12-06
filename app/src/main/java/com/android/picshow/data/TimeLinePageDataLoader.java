@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
+import com.android.picshow.utils.PicShowUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -19,6 +19,8 @@ import java.util.concurrent.Semaphore;
  */
 
 public class TimeLinePageDataLoader {
+
+    private static final String TAG = "TimeLinePageDataLoader";
 
     private Context mContext;
     private LoadListener mListener;
@@ -54,10 +56,14 @@ public class TimeLinePageDataLoader {
     }
 
     public void pause() {
-        loadTask.stopTask();
-        loadTask = null;
-        mSemaphore.release();
-        mSemaphore = null;
+        if(loadTask != null) {
+            loadTask.stopTask();
+            loadTask = null;
+        }
+        if(mSemaphore != null) {
+            mSemaphore.release();
+            mSemaphore = null;
+        }
     }
 
     private void reloadData() {
@@ -90,16 +96,18 @@ public class TimeLinePageDataLoader {
                 ArrayList<PhotoItem> items = new ArrayList<>();
                 queryImages(items);
                 queryVideo(items);
+                LogPrinter.i(TAG,"LoadThread load complete:"+items.size());
                 PhotoItem[] allItem = new PhotoItem[items.size()];
                 items.toArray(allItem);
-                Arrays.sort(allItem, new Comparator<PhotoItem>() {
-
-                    @Override
-                    public int compare(PhotoItem o1, PhotoItem o2) {
-                        return (int) (o1.getDateToken() - o2.getDateToken());
-                    }
-
-                });
+//                Arrays.sort(allItem, new Comparator<PhotoItem>() {
+//
+//                    @Override
+//                    public int compare(PhotoItem o1, PhotoItem o2) {
+//                        return (int) (o1.getDateToken() - o2.getDateToken());
+//                    }
+//
+//                });
+                PicShowUtils.sortItem(allItem,true);
                 mListener.finishLoad(allItem);
             }
 
