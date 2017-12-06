@@ -4,4 +4,7 @@
     <dimen name="smaller_front_size">16sp</dimen>
     <dimen name="toobar_height">54dp</dimen>
     <dimen name="topbar_padding">40dp</dimen>
+    <integer name="col_num">4</integer>
+    <dimen name="col_spaceing">5dp</dimen>
+    <dimen name="row_spaceing">10dp</dimen>
 </resources>
