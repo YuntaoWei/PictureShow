@@ -6,7 +6,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
 import com.android.picshow.R;
-import com.android.picshow.data.PhotoItem;
+import com.android.picshow.data.Album;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,13 @@ public class PicShowUtils {
         return (screenWidth - allSpaceing) / colNumbers;
     }
 
+    public static int getAlbumImageWidth(Context ctx) {
+        int screenWidth = ctx.getResources().getDisplayMetrics().widthPixels;
+        int colNumbers = ctx.getResources().getInteger(R.integer.album_col_num);
+        int allSpaceing = (int)ctx.getResources().getDimension(R.dimen.album_col_spaceing);
+        return (screenWidth - allSpaceing) / colNumbers;
+    }
+
 
     //PackageManager.PERMISSION_GRANTED
     private static final int PERMISSION_GRANTED = 0;
@@ -50,11 +57,11 @@ public class PicShowUtils {
         return true;
     }
 
-    public static void sortItem(PhotoItem[] original,boolean desc) {
+    public static void sortItem(Album[] original,boolean desc) {
         mergeSort(original,0,1);
     }
 
-    private static void mergeSort(PhotoItem[] a, int s, int len) {
+    private static void mergeSort(Album[] a, int s, int len) {
         int size = a.length;
         int mid = size / (len << 1);
         int c = size & ((len << 1) - 1);
@@ -69,11 +76,11 @@ public class PicShowUtils {
         mergeSort(a, 0, 2 * len);
     }
 
-    private static void merge(PhotoItem[] a, int s, int m, int t) {
-        PhotoItem[] tmp = new PhotoItem[t - s + 1];
+    private static void merge(Album[] a, int s, int m, int t) {
+        Album[] tmp = new Album[t - s + 1];
         int i = s, j = m, k = 0;
         while (i < m && j <= t) {
-            if (a[i].getDateToken() >= a[j].getDateToken()) {
+            if (a[i].dateToken >= a[j].dateToken) {
                 tmp[k] = a[i];
                 k++;
                 i++;

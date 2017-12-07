@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <GridView
+        android:layout_marginTop="@dimen/row_spaceing"
         android:id="@+id/grid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="max_front_size">22sp</dimen>
     <dimen name="bigger_front_size">20sp</dimen>
     <dimen name="smaller_front_size">16sp</dimen>
     <dimen name="toobar_height">54dp</dimen>
     <dimen name="topbar_padding">40dp</dimen>
+
+
     <integer name="col_num">4</integer>
     <dimen name="col_spaceing">5dp</dimen>
     <dimen name="row_spaceing">10dp</dimen>
+
+
+    <dimen name="album_title_left_padding">10dp</dimen>
+    <integer name="album_col_num">2</integer>
+    <dimen name="album_col_spaceing">20dp</dimen>
 </resources>

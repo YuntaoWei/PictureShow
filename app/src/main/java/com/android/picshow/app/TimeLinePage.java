@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 
 import com.android.picshow.R;
 import com.android.picshow.data.GlideApp;
+import com.android.picshow.data.LoadListener;
 import com.android.picshow.data.PhotoItem;
 import com.android.picshow.data.TimeLinePageDataLoader;
 import com.android.picshow.utils.LogPrinter;
@@ -32,7 +34,7 @@ public class TimeLinePage extends Fragment {
     public static final int UPDATE = 0x111;
 
 
-    private TimeLinePageDataLoader.LoadListener myLoadListener;
+    private LoadListener myLoadListener;
     private TimeLinePageDataLoader dataLoader;
     private Handler mainHandler;
     private View rootView;
@@ -57,6 +59,7 @@ public class TimeLinePage extends Fragment {
     public void onPause() {
         super.onPause();
         dataLoader.pause();
+        GlideApp.get(getContext()).clearMemory();
     }
 
     @Nullable
@@ -104,14 +107,14 @@ public class TimeLinePage extends Fragment {
         decodeBitmapWidth = PicShowUtils.getImageWidth(getContext());
         LogPrinter.i("yt","decodeBitmapWidth:" + decodeBitmapWidth
                 + "  density:" + getResources().getDisplayMetrics().density);
-        myLoadListener = new TimeLinePageDataLoader.LoadListener() {
+        myLoadListener = new LoadListener() {
             @Override
             public void startLoad() {
                 LogPrinter.i(TAG,"startLoad");
             }
 
             @Override
-            public void finishLoad(PhotoItem[] items) {
+            public void finishLoad(Object[] items) {
                 LogPrinter.i(TAG,"finishLoad:" + gridAdapter);
                 Message msg = mainHandler.obtainMessage();
                 msg.what = UPDATE;
@@ -145,6 +148,19 @@ public class TimeLinePage extends Fragment {
         gridView = (GridView) rootView.findViewById(R.id.grid);
         gridAdapter = new GridAdapter();
         gridView.setAdapter(gridAdapter);
+        gridAdapter.registerDataSetObserver(new DataSetObserver() {
+
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+
+            @Override
+            public void onInvalidated() {
+                super.onInvalidated();
+            }
+
+        });
     }
 
     private class GridAdapter extends BaseAdapter {
@@ -200,6 +216,7 @@ public class TimeLinePage extends Fragment {
                 GlideApp.with(TimeLinePage.this)
                         .load(getItem(position).getPath())
                         //.override(decodeBitmapWidth,decodeBitmapWidth)
+                        .placeholder(R.drawable.other)
                         .centerCrop()
                         .dontAnimate()
                         .format(DecodeFormat.PREFER_RGB_565)

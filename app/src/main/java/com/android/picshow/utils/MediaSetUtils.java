@@ -1,7 +1,16 @@
 package com.android.picshow.utils;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+
+import com.android.picshow.data.Album;
+import com.android.picshow.data.PhotoItem;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -16,20 +25,206 @@ public class MediaSetUtils {
                 +"/DCIM/Camera");
 
 
-    public static final String[] PROJECTION = {
+    private static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    private static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
+    /** for PhotoItem----start **/
+    private static final String[] PROJECTION = {
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.DATE_TAKEN
     };
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_DISPLAY_NAME = 1;
+    private static final int INDEX_DATA = 2;
+    private static final int INDEX_DATE = 3;
+    /** for PhotoItem----end **/
 
-    public static final int INDEX_ID = 0;
-    public static final int INDEX_DISPLAY_NAME = 1;
-    public static final int INDEX_DATA = 2;
-    public static final int INDEX_DATE = 3;
+    /** for Album----start **/
+    private static final String[] ALBUM_PROJECTION = {
+            MediaStore.Images.Media.BUCKET_ID,
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+            MediaStore.Images.Media.DATE_TAKEN,
+            MediaStore.Images.Media.DATA
+    };
+    private static final int ALBUM_BUCKET_INDEX = 0;
+    private static final int ALBUM_NAME_INDEX = 1;
+    private static final int ALBUM_DATE_INDEX = 2;
+    private static final int ALBUM_DATA_INDEX = 3;
+    /** for Album----end **/
 
-    public static final String WHERE = MediaStore.Images.Media.BUCKET_ID +" = ?";
-    public static final String SORT_ODER = "datetaken DESC";
+    private static final String[] ALBUM_PROJECTION_FROM_TABLE = {
+            MediaStore.Images.Media.BUCKET_ID,
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+            MediaStore.Images.Media.DATE_TAKEN,
+            MediaStore.Images.Media.DATA,
+            MediaStore.Files.FileColumns.MEDIA_TYPE,
+            "count(*)"
+    };
+
+    private static final int ALBUM_MEDIA_TYPE = 4;
+    private static final int ALBUM_COUNT_INDEX = 5;
+
+
+
+    private static final String ALBUM_GROUP_BY = "1) GROUP BY (1";
+
+    private static final String WHERE = MediaStore.Images.Media.BUCKET_ID +" = ?";
+    private static final String DEFAULT_SORT_ODER = "datetaken DESC";
+
+
+    /**
+     * Query the Images in the specified directory.
+     * @param mContext
+     * @param items
+     * @param bucketID
+     */
+    public static void queryImages(Context mContext, ArrayList<PhotoItem> items, long bucketID) {
+        //query image;
+        Cursor c = mContext.getContentResolver().query(IMAGE_URI,
+                PROJECTION,
+                WHERE,
+                new String[]{bucketID+""},
+                DEFAULT_SORT_ODER
+        );
+
+        try{
+            while(c.moveToNext()) {
+                items.add(new PhotoItem(
+                        c.getInt(INDEX_ID),
+                        c.getString(INDEX_DISPLAY_NAME),
+                        c.getString(INDEX_DATA),
+                        c.getLong(INDEX_DATE)));
+            }
+        } finally {
+            c.close();
+        }
+    }
+
+    /**
+     * Query the Videos in the specified directory.
+     * @param mContext
+     * @param items
+     * @param bucketID
+     */
+    public static void queryVideo(Context mContext, ArrayList<PhotoItem> items, long bucketID) {
+        //query image;
+        Cursor c = mContext.getContentResolver().query(VIDEO_URI,
+                PROJECTION,
+                WHERE,
+                new String[]{bucketID+""},
+                DEFAULT_SORT_ODER
+        );
+        try{
+            while(c.moveToNext()) {
+                items.add(new PhotoItem(
+                        c.getInt(INDEX_ID),
+                        c.getString(INDEX_DISPLAY_NAME),
+                        c.getString(INDEX_DATA),
+                        c.getLong(INDEX_DATE)));
+            }
+        } finally {
+            c.close();
+        }
+    }
+
+    public static Album[] queryAllAlbumSetFromFileTable(Context mContext) {
+        int type = 2 | 4;
+        ArrayList<Album> buffer = new ArrayList<Album>();
+        Uri uri =MediaStore.Files.getContentUri("external");
+        Cursor c = mContext.getContentResolver().query(uri,
+                ALBUM_PROJECTION_FROM_TABLE,
+                ALBUM_GROUP_BY,
+                null,
+                DEFAULT_SORT_ODER);
+
+        int typeBits = 0;
+        if ((type & 2) != 0) {
+            typeBits |= (1 << MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+        }
+        if ((type & 4) != 0) {
+            typeBits |= (1 << MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+        }
+
+        try{
+            while (c.moveToNext()) {
+                if ((typeBits & (1 << c.getInt(ALBUM_MEDIA_TYPE))) != 0) {
+                    Album entry = new Album(
+                            c.getInt(ALBUM_BUCKET_INDEX),
+                            c.getString(ALBUM_NAME_INDEX),
+                            c.getInt(ALBUM_DATE_INDEX),
+                            c.getString(ALBUM_DATA_INDEX),
+                            c.getInt(ALBUM_COUNT_INDEX));
+                    if (!buffer.contains(entry)) {
+                        buffer.add(entry);
+                    }
+                }
+            }
+        } finally {
+            c.close();
+        }
+
+        return buffer.toArray(new Album[buffer.size()]);
+    }
+
+    public static Album[] queryAllAlbumSet(Context mContext) {
+        HashMap<Integer,Album> allAlbum = new HashMap<>();
+        //All Image Album.
+        Cursor cImage = mContext.getContentResolver().query(IMAGE_URI,
+                ALBUM_PROJECTION,
+                ALBUM_GROUP_BY,
+                null,
+                DEFAULT_SORT_ODER
+                );
+        if(cImage == null)
+            return null;
+
+        try{
+            while (cImage.moveToNext()) {
+                int bucket = cImage.getInt(ALBUM_BUCKET_INDEX);
+                allAlbum.put(bucket,new Album(bucket,
+                        cImage.getString(ALBUM_NAME_INDEX),
+                        cImage.getInt(ALBUM_DATE_INDEX),
+                        cImage.getString(ALBUM_DATA_INDEX)));
+            }
+        } finally {
+            cImage.close();
+        }
+
+        //All Video Album
+        Cursor cVideo = mContext.getContentResolver().query(VIDEO_URI,
+                ALBUM_PROJECTION,
+                ALBUM_GROUP_BY,
+                null,
+                DEFAULT_SORT_ODER
+        );
+
+        if(cVideo == null)
+            return null;
+        try{
+            while (cVideo.moveToNext()) {
+                int bucket = cVideo.getInt(ALBUM_BUCKET_INDEX);
+                //Maybe there are some videos and images in the same folder,
+                //Prevent add repeatedly.
+                if(allAlbum.get(bucket) != null) {
+                    continue;
+                }
+                allAlbum.put(bucket,new Album(bucket,
+                        cVideo.getString(ALBUM_NAME_INDEX),
+                        cVideo.getInt(ALBUM_DATE_INDEX),
+                        cVideo.getString(ALBUM_DATA_INDEX)));
+
+            }
+        } finally {
+            cVideo.close();
+        }
+        Album[] albums = new Album[allAlbum.size()];
+        allAlbum.values().toArray(albums);
+        allAlbum.clear();
+        allAlbum = null;
+        return albums;
+    }
 
 
 

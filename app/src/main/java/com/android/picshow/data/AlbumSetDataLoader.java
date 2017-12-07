@@ -4,29 +4,31 @@ import android.content.Context;
 
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
+import com.android.picshow.utils.PicShowUtils;
 
-import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 /**
- * Created by yuntao.wei on 2017/11/30.
+ * Created by yuntao.wei on 2017/12/6.
  * github:https://github.com/YuntaoWei
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class TimeLinePageDataLoader {
+public class AlbumSetDataLoader {
 
-    private static final String TAG = "TimeLinePageDataLoader";
+    private static final String TAG = "AlbumSetDataLoader";
 
     private Context mContext;
     private LoadListener mListener;
     private Semaphore mSemaphore;
     private LoadThread loadTask;
 
-    public TimeLinePageDataLoader(Context context,LoadListener l) {
+
+    public AlbumSetDataLoader(Context context, LoadListener l) {
         mContext = context;
         mListener = l;
     }
+
 
     public void resume() {
         if(loadTask == null) {
@@ -56,6 +58,7 @@ public class TimeLinePageDataLoader {
             mSemaphore.release();
     }
 
+
     private class LoadThread extends Thread {
 
         private boolean stopTask = false;
@@ -78,15 +81,16 @@ public class TimeLinePageDataLoader {
                     return;
                 }
                 mListener.startLoad();
-                ArrayList<PhotoItem> items = new ArrayList<>();
-                MediaSetUtils.queryImages(mContext, items, MediaSetUtils.CAMERA_BUCKET_ID);
-                MediaSetUtils.queryVideo(mContext, items, MediaSetUtils.CAMERA_BUCKET_ID);
-                LogPrinter.i(TAG,"LoadThread load complete:"+items.size());
-                PhotoItem[] allItem = new PhotoItem[items.size()];
-                items.toArray(allItem);
-                mListener.finishLoad(allItem);
+                Album[] allAlbum = MediaSetUtils.queryAllAlbumSetFromFileTable(mContext);
+                LogPrinter.i(TAG,"LoadThread load complete:"+allAlbum.length);
+                PicShowUtils.sortItem(allAlbum,true);
+                mListener.finishLoad(allAlbum);
             }
 
         }
+
     }
+
+
+
 }
