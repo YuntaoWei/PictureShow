@@ -1,13 +1,27 @@
 package com.android.picshow.app;
 
+import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 
 import com.android.picshow.R;
+import com.android.picshow.data.AlbumDataLoader;
+import com.android.picshow.data.GlideApp;
+import com.android.picshow.data.LoadListener;
+import com.android.picshow.data.PhotoItem;
+import com.android.picshow.utils.LogPrinter;
+import com.android.picshow.utils.MediaSetUtils;
+import com.android.picshow.utils.PicShowUtils;
+import com.bumptech.glide.load.DecodeFormat;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -15,52 +29,174 @@ import com.android.picshow.R;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class AlbumPage extends Fragment {
+public class AlbumPage extends AppCompatActivity {
+
+    private static final String TAG = "AlbumPage";
+
+    private static final int UPDATE = 0x111;
+    private GridView gridView;
+    private GridAdapter mAdapter;
+    private int decodeBitmapWidth;
+    private LoadListener myLoadListener;
+    private Handler mainHandler;
+    private AlbumDataLoader albumDataLoader;
+    private int bucketID;
+    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.picshow_album);
         init();
+        initView();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        albumDataLoader.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.picshow_albumset,null);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initView();
+        albumDataLoader.pause();
+        GlideApp.get(getApplicationContext()).clearMemory();
     }
 
     private void init() {
+        decodeBitmapWidth = PicShowUtils.getImageWidth(getApplicationContext());
+        myLoadListener = new LoadListener() {
+            @Override
+            public void startLoad() {
+                LogPrinter.i(TAG,"startLoad");
+            }
+
+            @Override
+            public void finishLoad(Object[] items) {
+                LogPrinter.i(TAG,"finishLoad:" + mAdapter);
+                Message msg = mainHandler.obtainMessage();
+                msg.what = UPDATE;
+                msg.obj = items;
+                mainHandler.sendMessage(msg);
+            }
+        };
+
+        bucketID = getIntent().getIntExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
+
+        albumDataLoader = new AlbumDataLoader(getApplicationContext(), myLoadListener, bucketID);
+
+        mainHandler = new Handler() {
+
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case UPDATE:
+                        if(mAdapter != null) {
+                            mAdapter.setData((PhotoItem[]) msg.obj);
+                        }
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
+
+        };
 
     }
 
     private void initView() {
+        gridView = findViewById(R.id.grid);
+        mToolbar = findViewById(R.id.topbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        setTitle(getIntent().getStringExtra(MediaSetUtils.SET_NAME));
+        mAdapter = new GridAdapter();
+        mAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+        });
 
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+        gridView.setAdapter(mAdapter);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private class GridAdapter extends BaseAdapter {
+
+        private PhotoItem[] datas = new PhotoItem[0];
+
+        public GridAdapter() {}
+
+        public GridAdapter(PhotoItem[] items) {
+            datas = items;
+        }
+
+        public void setData(PhotoItem[] items) {
+            datas = items;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return datas.length;
+        }
+
+        @Override
+        public PhotoItem getItem(int position) {
+            return datas[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LogPrinter.i(TAG,"getView:"+position);
+            ViewHolder v = null;
+            if(convertView != null) {
+                v = (ViewHolder)convertView.getTag();
+                if(v == null) {
+                    v = new ViewHolder();
+                    v.imgView = convertView.findViewById(R.id.img);
+                }
+            } else {
+                convertView = getLayoutInflater().inflate(R.layout.img_item,null);
+                v = new ViewHolder();
+                v.imgView = convertView.findViewById(R.id.img);
+            }
+            convertView.setTag(v);
+            if(v != null && v.imgView != null) {
+                LogPrinter.i(TAG,"call glide to load and show image:"+getItem(position).getPath());
+                GlideApp.with(AlbumPage.this)
+                        .load(getItem(position).getPath())
+                        //.override(decodeBitmapWidth,decodeBitmapWidth)
+                        .placeholder(R.drawable.other)
+                        .centerCrop()
+                        .dontAnimate()
+                        .format(DecodeFormat.PREFER_RGB_565)
+                        .into(v.imgView);
+            }
+            return convertView;
+        }
+    }
+
+    private class ViewHolder {
+        public ImageView imgView;
     }
 
 }

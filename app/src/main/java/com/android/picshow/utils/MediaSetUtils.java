@@ -24,6 +24,9 @@ public class MediaSetUtils {
             = BucketHelper.getBucketID(Environment.getExternalStorageDirectory().getAbsolutePath()
                 +"/DCIM/Camera");
 
+    public static final String BUCKET = "bucket";
+    public static final String SET_NAME = "setname";
+
 
     private static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     private static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;

@@ -2,7 +2,6 @@ package com.android.picshow.utils;
 
 import android.support.v4.app.Fragment;
 
-import com.android.picshow.app.AlbumPage;
 import com.android.picshow.app.AlbumSetPage;
 import com.android.picshow.app.TimeLinePage;
 
@@ -48,8 +47,6 @@ public class PageFactory {
                 return new TimeLinePage();
             case PAGE_ALBUMSET:
                 return new AlbumSetPage();
-            case PAGE_ALBUM:
-                return new AlbumPage();
         }
         return null;
     }

@@ -15,4 +15,5 @@
     <dimen name="album_title_left_padding">10dp</dimen>
     <integer name="album_col_num">2</integer>
     <dimen name="album_col_spaceing">20dp</dimen>
+    <dimen name="album_name_count_spacing">40dp</dimen>
 </resources>

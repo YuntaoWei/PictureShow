@@ -11,34 +11,36 @@ import java.util.Comparator;
 import java.util.concurrent.Semaphore;
 
 /**
- * Created by yuntao.wei on 2017/11/30.
+ * Created by yuntao.wei on 2017/12/8.
  * github:https://github.com/YuntaoWei
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class TimeLinePageDataLoader {
+public class AlbumDataLoader {
 
-    private static final String TAG = "TimeLinePageDataLoader";
-
+    private static final String TAG = "AlbumDataLoader";
     private Context mContext;
     private LoadListener mListener;
     private Semaphore mSemaphore;
     private LoadThread loadTask;
+    private int bucketID;
 
-    public TimeLinePageDataLoader(Context context,LoadListener l) {
+
+    public AlbumDataLoader(Context context, LoadListener l, int bucket) {
         mContext = context;
         mListener = l;
+        bucketID = bucket;
     }
 
     public void resume() {
-        if(mSemaphore == null) {
-            mSemaphore = new Semaphore(0);
-        }
         if(loadTask == null) {
             loadTask = new LoadThread();
         }
         loadTask.start();
 
+        if(mSemaphore == null) {
+            mSemaphore = new Semaphore(0);
+        }
         mSemaphore.release();
     }
 
@@ -62,7 +64,8 @@ public class TimeLinePageDataLoader {
 
         private boolean stopTask = false;
 
-        public LoadThread() {}
+        public LoadThread() {
+        }
 
         public void stopTask() {
             stopTask = true;
@@ -76,14 +79,14 @@ public class TimeLinePageDataLoader {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(stopTask) {
+                if (stopTask) {
                     return;
                 }
                 mListener.startLoad();
                 ArrayList<PhotoItem> items = new ArrayList<>();
-                MediaSetUtils.queryImages(mContext, items, MediaSetUtils.CAMERA_BUCKET_ID);
-                MediaSetUtils.queryVideo(mContext, items, MediaSetUtils.CAMERA_BUCKET_ID);
-                LogPrinter.i(TAG,"LoadThread load complete:"+items.size());
+                MediaSetUtils.queryImages(mContext, items, bucketID);
+                MediaSetUtils.queryVideo(mContext, items, bucketID);
+                LogPrinter.i(TAG, "LoadThread load complete:" + items.size());
                 PhotoItem[] allItem = new PhotoItem[items.size()];
                 items.toArray(allItem);
                 Arrays.sort(allItem, new Comparator<PhotoItem>() {
@@ -95,7 +98,7 @@ public class TimeLinePageDataLoader {
                 });
                 mListener.finishLoad(allItem);
             }
-
         }
     }
+
 }

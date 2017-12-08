@@ -23,21 +23,18 @@
             android:textSize="@dimen/bigger_front_size"
             android:textStyle="bold"
             android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
             />
-
-        <TextView
-            android:alpha="0"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.0"/>
 
         <TextView
             android:id="@+id/album_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/smaller_front_size"
+            android:textSize="@dimen/bigger_front_size"
             android:layout_gravity="bottom"
-            android:layout_marginRight="@dimen/col_spaceing"
+            android:layout_marginLeft="@dimen/album_title_left_padding"
+            android:maxLines="1"
             />
 
     </LinearLayout>

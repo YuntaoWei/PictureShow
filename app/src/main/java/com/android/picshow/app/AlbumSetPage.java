@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -20,6 +22,7 @@ import com.android.picshow.data.AlbumSetDataLoader;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.LoadListener;
 import com.android.picshow.utils.LogPrinter;
+import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
 import com.bumptech.glide.load.DecodeFormat;
 
@@ -155,6 +158,22 @@ public class AlbumSetPage extends Fragment {
             }
 
         });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startAlbumPage(gridAdapter.getItem(position).bucketID,
+                        gridAdapter.getItem(position).bucketDisplayName);
+            }
+
+        });
+    }
+
+    private void startAlbumPage(int bucket, String name) {
+        Intent intent = new Intent(getContext(),AlbumPage.class);
+        intent.putExtra(MediaSetUtils.BUCKET,bucket);
+        intent.putExtra(MediaSetUtils.SET_NAME, name);
+        getContext().startActivity(intent);
     }
 
     private class GridAdapter extends BaseAdapter {
@@ -174,7 +193,7 @@ public class AlbumSetPage extends Fragment {
         }
 
         @Override
-        public Object getItem(int position) {
+        public Album getItem(int position) {
             return allItems[position];
         }
 

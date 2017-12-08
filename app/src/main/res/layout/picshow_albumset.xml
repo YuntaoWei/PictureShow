@@ -14,7 +14,7 @@
         android:layout_marginRight="@dimen/col_spaceing"
         android:scrollbars="none"
         android:horizontalSpacing="@dimen/col_spaceing"
-        android:listSelector="@null"
+        android:listSelector="@drawable/course_list_selector"
     />
 
 </LinearLayout>
