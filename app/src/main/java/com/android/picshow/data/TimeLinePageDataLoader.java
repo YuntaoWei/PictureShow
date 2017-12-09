@@ -72,6 +72,8 @@ public class TimeLinePageDataLoader {
         public void run() {
             while (true) {
                 try {
+                    if(mSemaphore == null)
+                        continue;
                     mSemaphore.acquire();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -94,6 +96,8 @@ public class TimeLinePageDataLoader {
                     }
                 });
                 mListener.finishLoad(allItem);
+                if(mSemaphore != null)
+                    mSemaphore.release();
             }
 
         }

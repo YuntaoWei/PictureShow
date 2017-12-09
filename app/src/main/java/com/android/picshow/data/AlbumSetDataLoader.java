@@ -73,6 +73,8 @@ public class AlbumSetDataLoader {
         public void run() {
             while (true) {
                 try {
+                    if(mSemaphore == null)
+                        continue;
                     mSemaphore.acquire();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -85,6 +87,8 @@ public class AlbumSetDataLoader {
                 LogPrinter.i(TAG,"LoadThread load complete:"+allAlbum.length);
                 PicShowUtils.sortItem(allAlbum,true);
                 mListener.finishLoad(allAlbum);
+                if(mSemaphore != null)
+                    mSemaphore.release();
             }
 
         }
