@@ -85,6 +85,7 @@ public class AlbumSetPage extends Fragment {
         } else {
             //like activity onPause lifecycle
             if(dataLoader != null) {
+                GlideApp.get(getContext()).clearMemory();
                 dataLoader.pause();
             }
         }
@@ -206,7 +207,7 @@ public class AlbumSetPage extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder v = null;
             if(convertView == null) {
-                convertView = getLayoutInflater().inflate(R.layout.album_item,null);
+                convertView = getLayoutInflater().inflate(R.layout.picshow_album_item,null);
                 v = new ViewHolder();
                 v.albumImage = convertView.findViewById(R.id.album_img);
                 v.albumTitle = convertView.findViewById(R.id.album_name);

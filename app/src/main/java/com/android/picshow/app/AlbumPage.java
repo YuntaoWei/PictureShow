@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -127,6 +129,7 @@ public class AlbumPage extends AppCompatActivity {
         });
 
         gridView.setAdapter(mAdapter);
+        gridView.setOnItemClickListener(mAdapter);
     }
 
     @Override
@@ -134,7 +137,8 @@ public class AlbumPage extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private class GridAdapter extends BaseAdapter {
+    private class GridAdapter extends BaseAdapter implements AdapterView.OnItemClickListener,
+            AdapterView.OnItemLongClickListener{
 
         private PhotoItem[] datas = new PhotoItem[0];
 
@@ -161,7 +165,7 @@ public class AlbumPage extends AppCompatActivity {
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return datas[position].getID();
         }
 
         @Override
@@ -175,7 +179,7 @@ public class AlbumPage extends AppCompatActivity {
                     v.imgView = convertView.findViewById(R.id.img);
                 }
             } else {
-                convertView = getLayoutInflater().inflate(R.layout.img_item,null);
+                convertView = getLayoutInflater().inflate(R.layout.picshow_img_item,null);
                 v = new ViewHolder();
                 v.imgView = convertView.findViewById(R.id.img);
             }
@@ -192,6 +196,19 @@ public class AlbumPage extends AppCompatActivity {
                         .into(v.imgView);
             }
             return convertView;
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(AlbumPage.this.getApplicationContext(), PhotoActivity.class);
+            intent.putExtra(MediaSetUtils.PHOTO_ID, getItemId(position));
+            intent.putExtra(MediaSetUtils.PHOTO_PATH, getItem(position).getPath());
+            startActivity(intent);
+        }
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            return false;
         }
     }
 

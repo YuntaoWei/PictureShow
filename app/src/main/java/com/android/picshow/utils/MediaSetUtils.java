@@ -26,6 +26,8 @@ public class MediaSetUtils {
 
     public static final String BUCKET = "bucket";
     public static final String SET_NAME = "setname";
+    public static final String PHOTO_ID = "_id";
+    public static final String PHOTO_PATH = "_path";
 
 
     private static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;

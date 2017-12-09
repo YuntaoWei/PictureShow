@@ -206,7 +206,7 @@ public class TimeLinePage extends Fragment {
                     v.imgView = convertView.findViewById(R.id.img);
                 }
             } else {
-                convertView = getLayoutInflater().inflate(R.layout.img_item,null);
+                convertView = getLayoutInflater().inflate(R.layout.picshow_img_item,null);
                 v = new ViewHolder();
                 v.imgView = convertView.findViewById(R.id.img);
             }

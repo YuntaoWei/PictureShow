@@ -1,12 +1,15 @@
 package com.android.picshow.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by yuntao.wei on 2017/11/28.
  * github:https://github.com/YuntaoWei
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class PhotoItem {
+public class PhotoItem implements Parcelable {
 
     private int ID;
     private String mTitle;
@@ -52,5 +55,16 @@ public class PhotoItem {
 
     public void setDateToken(long dateToken) {
         this.dateToken = dateToken;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }
