@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.android.picshow.ui;
+package com.android.picshow.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -24,6 +24,8 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
+
+import com.android.picshow.utils.MediaSetUtils;
 
 import java.util.HashMap;
 
@@ -63,6 +65,8 @@ public abstract class BaseCursorPagerAdapter extends BaseFragmentPagerAdapter {
      * @return the newly created fragment.
      */
     public abstract Fragment getItem(Context context, Cursor cursor, int position);
+
+    public abstract Fragment createNewFragment(Cursor c, int postion);
 
     // TODO: This shouldn't just return null - maybe it needs to wait for a cursor to be supplied?
     //       See b/7103023
@@ -178,7 +182,7 @@ public abstract class BaseCursorPagerAdapter extends BaseFragmentPagerAdapter {
         Cursor oldCursor = mCursor;
         mCursor = newCursor;
         if (newCursor != null) {
-            mRowIDColumn = newCursor.getColumnIndex("");
+            mRowIDColumn = newCursor.getColumnIndex(MediaSetUtils.PHOTO_ID);
         } else {
             mRowIDColumn = -1;
         }
@@ -230,7 +234,7 @@ public abstract class BaseCursorPagerAdapter extends BaseFragmentPagerAdapter {
         mCursor = c;
         mContext = context;
         mRowIDColumn = cursorPresent
-                ? mCursor.getColumnIndex("") : -1;
+                ? mCursor.getColumnIndex(MediaSetUtils.PHOTO_ID) : -1;
     }
 
     /**

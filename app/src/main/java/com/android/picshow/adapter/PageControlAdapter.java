@@ -1,4 +1,4 @@
-package com.android.picshow.ui;
+package com.android.picshow.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

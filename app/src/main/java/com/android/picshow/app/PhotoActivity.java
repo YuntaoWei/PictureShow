@@ -2,15 +2,15 @@ package com.android.picshow.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
 
 import com.android.picshow.R;
-import com.android.picshow.data.GlideApp;
+import com.android.picshow.adapter.PhotoPageAdapter;
 import com.android.picshow.data.PhotoDataLoader;
 import com.android.picshow.utils.MediaSetUtils;
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * Created by yuntao.wei on 2017/12/9.
@@ -20,13 +20,15 @@ import com.android.picshow.utils.MediaSetUtils;
 
 public class PhotoActivity extends AppCompatActivity {
 
-    private ImageView imgShow;
     private int currentID;
     private String currentPath;
+    private PhotoView photoView;
+    private ViewPager photoPager;
+    private PhotoPageAdapter photoPageAdapter;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.picshow_photo_page);
         init();
         initView();
@@ -39,17 +41,14 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        imgShow = findViewById(R.id.photo);
+        photoPager = findViewById(R.id.photo_pager);
+        photoPageAdapter = new PhotoPageAdapter(getApplicationContext(), getSupportFragmentManager(), null);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        GlideApp.with(PhotoActivity.this)
-                .load(currentPath)
-                .centerCrop()
-                .into(imgShow);
     }
 
     @Override

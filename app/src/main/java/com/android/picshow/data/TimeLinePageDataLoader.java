@@ -81,6 +81,7 @@ public class TimeLinePageDataLoader {
                 if(stopTask) {
                     return;
                 }
+                LogPrinter.i("ytyt","run run run!");
                 mListener.startLoad();
                 ArrayList<PhotoItem> items = new ArrayList<>();
                 MediaSetUtils.queryImages(mContext, items, MediaSetUtils.CAMERA_BUCKET_ID);
@@ -96,8 +97,6 @@ public class TimeLinePageDataLoader {
                     }
                 });
                 mListener.finishLoad(allItem);
-                if(mSemaphore != null)
-                    mSemaphore.release();
             }
 
         }

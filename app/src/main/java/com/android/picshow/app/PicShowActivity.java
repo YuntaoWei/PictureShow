@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.android.picshow.R;
-import com.android.picshow.ui.PageControlAdapter;
+import com.android.picshow.adapter.PageControlAdapter;
 import com.android.picshow.utils.PageFactory;
 
 

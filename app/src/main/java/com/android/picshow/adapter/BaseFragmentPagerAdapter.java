@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.android.picshow.ui;
+package com.android.picshow.adapter;
 
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
