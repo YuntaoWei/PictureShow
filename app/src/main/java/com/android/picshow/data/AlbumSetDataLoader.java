@@ -1,6 +1,6 @@
 package com.android.picshow.data;
 
-import android.content.Context;
+import android.app.Application;
 import android.net.Uri;
 
 import com.android.picshow.app.PictureShowApplication;
@@ -27,13 +27,14 @@ public class AlbumSetDataLoader implements DataLoader {
     private ChangeNotify notifier;
 
 
-    public AlbumSetDataLoader(Context context, LoadListener l) {
+    public AlbumSetDataLoader(Application context, LoadListener l) {
         mContext = (PictureShowApplication)context;
         mListener = l;
         notifier = new ChangeNotify(this, new Uri[] {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
+        mSemaphore = new Semaphore(1);
     }
 
 
@@ -44,7 +45,7 @@ public class AlbumSetDataLoader implements DataLoader {
         loadTask.start();
 
         if(mSemaphore == null) {
-            mSemaphore = new Semaphore(0);
+            mSemaphore = new Semaphore(1);
         }
         mSemaphore.release();
     }
@@ -94,6 +95,8 @@ public class AlbumSetDataLoader implements DataLoader {
                 if(stopTask) {
                     return;
                 }
+                if(!notifier.isDirty())
+                    continue;
                 mListener.startLoad();
                 Album[] allAlbum = MediaSetUtils.queryAllAlbumSetFromFileTable(mContext);
                 LogPrinter.i(TAG,"LoadThread load complete:"+allAlbum.length);

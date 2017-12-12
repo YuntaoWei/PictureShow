@@ -1,13 +1,16 @@
 package com.android.picshow.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
 import com.android.picshow.data.Album;
 import com.android.picshow.data.PhotoItem;
+import com.android.picshow.data.SortCursor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,6 +136,25 @@ public class MediaSetUtils {
             c.close();
         }
     }
+
+    public static Cursor queryAllItemByBucketID(ContentResolver cr, int bucket) {
+        Cursor result = null;
+        Cursor[] results = new Cursor[2];
+        results[0] = cr.query(IMAGE_URI, PROJECTION, WHERE, new String[]{bucket+""}, DEFAULT_SORT_ODER);
+        results[1] = cr.query(VIDEO_URI, PROJECTION, WHERE, new String[]{bucket+""}, DEFAULT_SORT_ODER);
+        if(results[0] != null) {
+            if(results[1] != null)
+                result = new MergeCursor(results);
+            else
+                result = results[0];
+        } else if(results[1] != null)
+            result = results[1];
+
+        if(result != null)
+            return new SortCursor(result, INDEX_ID);
+        return null;
+    }
+
 
     public static Album[] queryAllAlbumSetFromFileTable(Context mContext) {
         int type = 2 | 4;

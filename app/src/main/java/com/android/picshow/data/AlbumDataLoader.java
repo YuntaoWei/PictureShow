@@ -1,6 +1,6 @@
 package com.android.picshow.data;
 
-import android.content.Context;
+import android.app.Application;
 import android.net.Uri;
 
 import com.android.picshow.app.PictureShowApplication;
@@ -29,7 +29,7 @@ public class AlbumDataLoader implements DataLoader {
     private ChangeNotify notifier;
 
 
-    public AlbumDataLoader(Context context, LoadListener l, int bucket) {
+    public AlbumDataLoader(Application context, LoadListener l, int bucket) {
         mContext = (PictureShowApplication)context;
         mListener = l;
         bucketID = bucket;
@@ -37,7 +37,9 @@ public class AlbumDataLoader implements DataLoader {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
+        mSemaphore = new Semaphore(1);
     }
+
 
     public void resume() {
         if(loadTask == null) {
@@ -46,7 +48,7 @@ public class AlbumDataLoader implements DataLoader {
         loadTask.start();
 
         if(mSemaphore == null) {
-            mSemaphore = new Semaphore(0);
+            mSemaphore = new Semaphore(1);
         }
         mSemaphore.release();
     }
@@ -94,6 +96,8 @@ public class AlbumDataLoader implements DataLoader {
                 if (stopTask) {
                     return;
                 }
+                if(!notifier.isDirty())
+                    continue;
                 mListener.startLoad();
                 ArrayList<PhotoItem> items = new ArrayList<>();
                 MediaSetUtils.queryImages(mContext, items, bucketID);

@@ -86,7 +86,7 @@ public class AlbumPage extends AppCompatActivity {
 
         bucketID = getIntent().getIntExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
 
-        albumDataLoader = new AlbumDataLoader(getApplicationContext(), myLoadListener, bucketID);
+        albumDataLoader = new AlbumDataLoader(getApplication(), myLoadListener, bucketID);
 
         mainHandler = new Handler() {
 
@@ -188,7 +188,7 @@ public class AlbumPage extends AppCompatActivity {
                 LogPrinter.i(TAG,"call glide to load and show image:"+getItem(position).getPath());
                 GlideApp.with(AlbumPage.this)
                         .load(getItem(position).getPath())
-                        //.override(decodeBitmapWidth,decodeBitmapWidth)
+                        .override(decodeBitmapWidth,decodeBitmapWidth)
                         .placeholder(R.drawable.other)
                         .centerCrop()
                         .dontAnimate()
@@ -201,7 +201,7 @@ public class AlbumPage extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent(AlbumPage.this.getApplicationContext(), PhotoActivity.class);
-            intent.putExtra(MediaSetUtils.PHOTO_ID, getItemId(position));
+            intent.putExtra(MediaSetUtils.PHOTO_ID, position);
             intent.putExtra(MediaSetUtils.PHOTO_PATH, getItem(position).getPath());
             intent.putExtra(MediaSetUtils.BUCKET, bucketID);
             startActivity(intent);

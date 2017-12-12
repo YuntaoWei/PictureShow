@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 public class PicShowUtils {
 
+    public static final int MAX_LOAD = 5;
+
 
     public static final String[] PERMISSIONS = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE

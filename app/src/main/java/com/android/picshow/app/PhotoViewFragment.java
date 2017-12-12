@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.picshow.R;
+import com.android.picshow.data.GlideApp;
+import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
+import com.bumptech.glide.load.DecodeFormat;
 import com.github.chrisbanes.photoview.PhotoView;
 
 /**
@@ -20,8 +23,11 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 public class PhotoViewFragment extends Fragment {
 
+    private static final String TAG = "PhotoViewFragment";
+
     private int currentPosition;
     private int currentPhotoID;
+    private String currentPath;
     private static final int INVALID = -1;
     private static final String CURRENT_POSITION = "current_position";
     private PhotoView mPhotoView;
@@ -31,9 +37,13 @@ public class PhotoViewFragment extends Fragment {
     public static Fragment newInstance(Cursor c, int position) {
         final Fragment f = new PhotoViewFragment();
         final Bundle b = new Bundle();
-        int index = c.getColumnIndexOrThrow(MediaSetUtils.PHOTO_ID);
-        int currentPhotoIndex = c.getInt(index);
-        b.putInt(MediaSetUtils.PHOTO_ID, currentPhotoIndex);
+
+        int photoID = c.getInt(0);
+        b.putInt(MediaSetUtils.PHOTO_ID, photoID);
+
+        String path = c.getString(2);
+        b.putString(MediaSetUtils.PHOTO_PATH, path);
+
         b.putInt(CURRENT_POSITION, position);
         f.setArguments(b);
         return f;
@@ -61,6 +71,9 @@ public class PhotoViewFragment extends Fragment {
         Bundle b = getArguments();
         currentPosition = b.getInt(CURRENT_POSITION, INVALID);
         currentPhotoID = b.getInt(MediaSetUtils.PHOTO_ID, INVALID);
+        currentPath = b.getString(MediaSetUtils.PHOTO_PATH);
+        LogPrinter.i(TAG, "currentPosition:" + currentPosition + "  currentPhotoID:" + currentPhotoID
+                + "    currentPath:" + currentPath);
     }
 
     private void initView() {
@@ -70,6 +83,10 @@ public class PhotoViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        GlideApp.with(this)
+                .load(currentPath)
+                .format(DecodeFormat.PREFER_RGB_565)
+                .into(mPhotoView);
     }
 
     @Override

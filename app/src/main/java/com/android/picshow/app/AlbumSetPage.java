@@ -54,11 +54,16 @@ public class AlbumSetPage extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if(dataLoader != null)
+            dataLoader.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if(dataLoader != null)
+            dataLoader.pause();
+        GlideApp.get(getContext()).clearMemory();
     }
 
     @Nullable
@@ -78,17 +83,6 @@ public class AlbumSetPage extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser) {
-            //Likes activity onResume lifecycle,Should load data here.
-            if(dataLoader != null)
-                dataLoader.resume();
-        } else {
-            //like activity onPause lifecycle
-            if(dataLoader != null) {
-                GlideApp.get(getContext()).clearMemory();
-                dataLoader.pause();
-            }
-        }
     }
 
 
@@ -120,7 +114,7 @@ public class AlbumSetPage extends Fragment {
             }
         };
 
-        dataLoader = new AlbumSetDataLoader(getContext(), myLoadListener);
+        dataLoader = new AlbumSetDataLoader(getActivity().getApplication(), myLoadListener);
         mainHandler = new Handler() {
 
             @Override
@@ -218,7 +212,7 @@ public class AlbumSetPage extends Fragment {
             if(v != null) {
                 GlideApp.with(AlbumSetPage.this)
                         .load(allItems[position].absPath)
-                        //.override(decodeBitmapWidth,decodeBitmapWidth)
+                        .override(decodeBitmapWidth,decodeBitmapWidth)
                         .placeholder(R.drawable.other)
                         .centerCrop()
                         .dontAnimate()

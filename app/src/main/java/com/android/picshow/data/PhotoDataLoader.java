@@ -1,5 +1,11 @@
 package com.android.picshow.data;
 
+import android.app.Application;
+import android.database.Cursor;
+
+import com.android.picshow.app.PictureShowApplication;
+import com.android.picshow.utils.MediaSetUtils;
+
 import java.util.concurrent.Semaphore;
 
 /**
@@ -13,9 +19,21 @@ public class PhotoDataLoader implements DataLoader {
     public static final int INVALID = -1;
     private Semaphore semaphore;
     private LoadThread loadTask;
+    private int bucketID;
+    private PhotoLoadListener loadCallBack;
+    private PictureShowApplication mApp;
 
-    public PhotoDataLoader() {
+    public interface PhotoLoadListener {
+
+        public void startLoad();
+        public void loadFinish(Cursor cursor);
+    }
+
+    public PhotoDataLoader(Application app, int bucket, PhotoLoadListener listener) {
+        mApp = (PictureShowApplication)app;
+        bucketID = bucket;
         semaphore = new Semaphore(1);
+        loadCallBack = listener;
     }
 
     public void resume() {
@@ -24,9 +42,17 @@ public class PhotoDataLoader implements DataLoader {
         if(loadTask == null)
             loadTask = new LoadThread();
         loadTask.start();
+        semaphore.release();
     }
 
-    public void pause() {}
+    public void pause() {
+        if(loadTask != null)
+            loadTask.stopTask();
+        loadTask = null;
+        if(semaphore != null)
+            semaphore.release();
+        semaphore = null;
+    }
 
     private void reloadData() {
         if(semaphore != null)
@@ -50,7 +76,7 @@ public class PhotoDataLoader implements DataLoader {
 
         @Override
         public void run() {
-            while (stop) {
+            while (true) {
                 try {
                     if(semaphore == null)
                         continue;
@@ -61,7 +87,8 @@ public class PhotoDataLoader implements DataLoader {
                 if(stop)
                     return;
 
-                semaphore.release();
+                Cursor c = MediaSetUtils.queryAllItemByBucketID(mApp.getContentResolver(), bucketID);
+                loadCallBack.loadFinish(c);
             }
         }
     }

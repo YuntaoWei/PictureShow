@@ -52,12 +52,15 @@ public class TimeLinePage extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        dataLoader.resume();
+        if(dataLoader != null)
+            dataLoader.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if(dataLoader != null)
+            dataLoader.pause();
         GlideApp.get(getContext()).clearMemory();
     }
 
@@ -80,16 +83,6 @@ public class TimeLinePage extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser) {
-            //Likes activity onResume lifecycle,Should load data here.
-            if(dataLoader != null)
-                dataLoader.resume();
-        } else {
-            //like activity onPause lifecycle
-            if(dataLoader != null) {
-                dataLoader.pause();
-            }
-        }
     }
 
     @Override
@@ -104,7 +97,7 @@ public class TimeLinePage extends Fragment {
 
     private void init() {
         decodeBitmapWidth = PicShowUtils.getImageWidth(getContext());
-        LogPrinter.i("yt","decodeBitmapWidth:" + decodeBitmapWidth
+        LogPrinter.i(TAG,"decodeBitmapWidth:" + decodeBitmapWidth
                 + "  density:" + getResources().getDisplayMetrics().density);
         myLoadListener = new LoadListener() {
             @Override
@@ -214,7 +207,7 @@ public class TimeLinePage extends Fragment {
                 LogPrinter.i(TAG,"call glide to load and show image:"+getItem(position).getPath());
                 GlideApp.with(TimeLinePage.this)
                         .load(getItem(position).getPath())
-                        //.override(decodeBitmapWidth,decodeBitmapWidth)
+                        .override(decodeBitmapWidth,decodeBitmapWidth)
                         .placeholder(R.drawable.other)
                         .centerCrop()
                         .dontAnimate()

@@ -35,6 +35,7 @@ public class TimeLinePageDataLoader implements DataLoader {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
+        mSemaphore = new Semaphore(0);
     }
 
     public void resume() {
@@ -50,14 +51,12 @@ public class TimeLinePageDataLoader implements DataLoader {
     }
 
     public void pause() {
-        LogPrinter.i("ytyt","TimeLineDataLoader pause!");
         if(loadTask != null) {
             loadTask.stopTask();
             loadTask = null;
         }
         if(mSemaphore != null) {
             mSemaphore.release();
-            mSemaphore = null;
         }
     }
 
@@ -94,7 +93,8 @@ public class TimeLinePageDataLoader implements DataLoader {
                 if(stopTask) {
                     return;
                 }
-                LogPrinter.i("ytyt","run run run!");
+                if(!notifier.isDirty())
+                    continue;
                 mListener.startLoad();
                 ArrayList<PhotoItem> items = new ArrayList<>();
                 MediaSetUtils.queryImages(mContext, items, MediaSetUtils.CAMERA_BUCKET_ID);
