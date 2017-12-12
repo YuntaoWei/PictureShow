@@ -1,7 +1,9 @@
 package com.android.picshow.data;
 
-import android.content.Context;
+import android.app.Application;
+import android.net.Uri;
 
+import com.android.picshow.app.PictureShowApplication;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 
@@ -16,18 +18,23 @@ import java.util.concurrent.Semaphore;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class TimeLinePageDataLoader {
+public class TimeLinePageDataLoader implements DataLoader {
 
     private static final String TAG = "TimeLinePageDataLoader";
 
-    private Context mContext;
+    private PictureShowApplication mContext;
     private LoadListener mListener;
     private Semaphore mSemaphore;
     private LoadThread loadTask;
+    private ChangeNotify notifier;
 
-    public TimeLinePageDataLoader(Context context,LoadListener l) {
-        mContext = context;
+    public TimeLinePageDataLoader(Application context, LoadListener l) {
+        mContext = (PictureShowApplication)context;
         mListener = l;
+        notifier = new ChangeNotify(this, new Uri[] {
+                MediaSetUtils.VIDEO_URI,
+                MediaSetUtils.IMAGE_URI
+        }, mContext);
     }
 
     public void resume() {
@@ -43,6 +50,7 @@ public class TimeLinePageDataLoader {
     }
 
     public void pause() {
+        LogPrinter.i("ytyt","TimeLineDataLoader pause!");
         if(loadTask != null) {
             loadTask.stopTask();
             loadTask = null;
@@ -56,6 +64,11 @@ public class TimeLinePageDataLoader {
     private void reloadData() {
         if(mSemaphore != null)
             mSemaphore.release();
+    }
+
+    @Override
+    public void notifyContentChanged() {
+        reloadData();
     }
 
     private class LoadThread extends Thread {

@@ -8,7 +8,7 @@ import java.util.concurrent.Semaphore;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class PhotoDataLoader {
+public class PhotoDataLoader implements DataLoader {
 
     public static final int INVALID = -1;
     private Semaphore semaphore;
@@ -27,6 +27,16 @@ public class PhotoDataLoader {
     }
 
     public void pause() {}
+
+    private void reloadData() {
+        if(semaphore != null)
+            semaphore.release();
+    }
+
+    @Override
+    public void notifyContentChanged() {
+        reloadData();
+    }
 
     private class LoadThread extends Thread {
 

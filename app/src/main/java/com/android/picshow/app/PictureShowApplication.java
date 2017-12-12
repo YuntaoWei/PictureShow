@@ -17,7 +17,7 @@ public class PictureShowApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mDataManager = new DataManager();
+        mDataManager = new DataManager(this);
     }
 
     public DataManager getDataManager() {

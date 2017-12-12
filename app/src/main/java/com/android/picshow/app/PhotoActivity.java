@@ -21,6 +21,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 public class PhotoActivity extends AppCompatActivity {
 
     private int currentID;
+    private int bucketID;
     private String currentPath;
     private PhotoView photoView;
     private ViewPager photoPager;
@@ -38,11 +39,17 @@ public class PhotoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         currentPath = intent.getStringExtra(MediaSetUtils.PHOTO_PATH);
         currentID = intent.getIntExtra(MediaSetUtils.PHOTO_ID, PhotoDataLoader.INVALID);
+        bucketID = intent.getIntExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
+        makeCursor();
     }
 
     private void initView() {
         photoPager = findViewById(R.id.photo_pager);
         photoPageAdapter = new PhotoPageAdapter(getApplicationContext(), getSupportFragmentManager(), null);
+    }
+
+    private void makeCursor() {
+
     }
 
 

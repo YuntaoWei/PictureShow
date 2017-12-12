@@ -203,6 +203,7 @@ public class AlbumPage extends AppCompatActivity {
             Intent intent = new Intent(AlbumPage.this.getApplicationContext(), PhotoActivity.class);
             intent.putExtra(MediaSetUtils.PHOTO_ID, getItemId(position));
             intent.putExtra(MediaSetUtils.PHOTO_PATH, getItem(position).getPath());
+            intent.putExtra(MediaSetUtils.BUCKET, bucketID);
             startActivity(intent);
         }
 

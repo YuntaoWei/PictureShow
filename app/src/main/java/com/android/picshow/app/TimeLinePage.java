@@ -58,7 +58,6 @@ public class TimeLinePage extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        dataLoader.pause();
         GlideApp.get(getContext()).clearMemory();
     }
 
@@ -122,7 +121,7 @@ public class TimeLinePage extends Fragment {
                 mainHandler.sendMessage(msg);
             }
         };
-        dataLoader = new TimeLinePageDataLoader(getContext(),myLoadListener);
+        dataLoader = new TimeLinePageDataLoader(getActivity().getApplication(),myLoadListener);
 
         mainHandler = new Handler() {
 

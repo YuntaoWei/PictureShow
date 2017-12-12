@@ -1,7 +1,9 @@
 package com.android.picshow.data;
 
 import android.content.Context;
+import android.net.Uri;
 
+import com.android.picshow.app.PictureShowApplication;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
@@ -14,19 +16,24 @@ import java.util.concurrent.Semaphore;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class AlbumSetDataLoader {
+public class AlbumSetDataLoader implements DataLoader {
 
     private static final String TAG = "AlbumSetDataLoader";
 
-    private Context mContext;
+    private PictureShowApplication mContext;
     private LoadListener mListener;
     private Semaphore mSemaphore;
     private LoadThread loadTask;
+    private ChangeNotify notifier;
 
 
     public AlbumSetDataLoader(Context context, LoadListener l) {
-        mContext = context;
+        mContext = (PictureShowApplication)context;
         mListener = l;
+        notifier = new ChangeNotify(this, new Uri[] {
+                MediaSetUtils.VIDEO_URI,
+                MediaSetUtils.IMAGE_URI
+        }, mContext);
     }
 
 
@@ -56,6 +63,11 @@ public class AlbumSetDataLoader {
     private void reloadData() {
         if(mSemaphore != null)
             mSemaphore.release();
+    }
+
+    @Override
+    public void notifyContentChanged() {
+        reloadData();
     }
 
 

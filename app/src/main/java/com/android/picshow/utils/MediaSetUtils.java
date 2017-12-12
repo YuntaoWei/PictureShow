@@ -30,8 +30,8 @@ public class MediaSetUtils {
     public static final String PHOTO_PATH = "_path";
 
 
-    private static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    private static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+    public static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    public static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
     /** for PhotoItem----start **/
     private static final String[] PROJECTION = {
