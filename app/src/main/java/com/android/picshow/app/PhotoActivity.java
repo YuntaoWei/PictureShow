@@ -8,6 +8,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
@@ -37,6 +38,9 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private PhotoDataLoader mLoader;
     private Handler mainHandler;
     private final static int UPDATE = 0x111;
+    private final static int ENTER_FULL_SCREEN = 0x112;
+    private final static int EXIT_FULL_SCREEN = 0x113;
+    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,15 +67,34 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                             photoPager.setCurrentItem(currentID);
                         }
                         break;
+
+                    case ENTER_FULL_SCREEN:
+                        PicShowUtils.setFullScreen(PhotoActivity.this);
+                        break;
+
+                    case EXIT_FULL_SCREEN:
+                        PicShowUtils.exitFullScreen(PhotoActivity.this);
+                        break;
                 }
             }
 
         };
     }
 
+    public void enterFullScreen() {
+        mainHandler.sendEmptyMessage(ENTER_FULL_SCREEN);
+    }
+
+    public void setExitFullScreen() {
+        mainHandler.sendEmptyMessage(EXIT_FULL_SCREEN);
+    }
+
     private void initView() {
         photoPager = findViewById(R.id.photo_pager);
         photoPager.setOffscreenPageLimit(PicShowUtils.MAX_LOAD);
+        mToolbar = findViewById(R.id.photo_toolbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationIcon(R.mipmap.ic_back);
     }
 
     @Override

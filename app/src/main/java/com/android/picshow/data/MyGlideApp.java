@@ -11,4 +11,5 @@ import com.bumptech.glide.annotation.GlideModule;
 
 @GlideModule
 public final class MyGlideApp extends AppGlideModule {
+
 }

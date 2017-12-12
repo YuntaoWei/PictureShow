@@ -1,18 +1,26 @@
 package com.android.picshow.app;
 
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 
 import com.android.picshow.R;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestFutureTarget;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 
 /**
@@ -78,6 +86,12 @@ public class PhotoViewFragment extends Fragment {
 
     private void initView() {
         mPhotoView = getView().findViewById(R.id.photo);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogPrinter.i(TAG, "PhotoView onclick!");
+            }
+        });
     }
 
     @Override
@@ -85,8 +99,21 @@ public class PhotoViewFragment extends Fragment {
         super.onResume();
         GlideApp.with(this)
                 .load(currentPath)
-                .format(DecodeFormat.PREFER_RGB_565)
+                .listener(new RequestListener() {
+
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .format(DecodeFormat.PREFER_ARGB_8888)
                 .into(mPhotoView);
+
     }
 
     @Override

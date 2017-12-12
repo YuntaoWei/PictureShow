@@ -1,9 +1,12 @@
 package com.android.picshow.utils;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.android.picshow.R;
 import com.android.picshow.data.Album;
@@ -25,6 +28,11 @@ public class PicShowUtils {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+    /**
+     *Get the TimeLine page thumbnail size from xml configuration.
+     * @param ctx
+     * @return
+     */
     public static int getImageWidth(Context ctx) {
         int screenWidth = ctx.getResources().getDisplayMetrics().widthPixels;
         int colNumbers = ctx.getResources().getInteger(R.integer.col_num);
@@ -32,6 +40,11 @@ public class PicShowUtils {
         return (screenWidth - allSpaceing) / colNumbers;
     }
 
+    /**
+     * Get the AlbumSet Page thumbnail size from the xml configuration.
+     * @param ctx
+     * @return
+     */
     public static int getAlbumImageWidth(Context ctx) {
         int screenWidth = ctx.getResources().getDisplayMetrics().widthPixels;
         int colNumbers = ctx.getResources().getInteger(R.integer.album_col_num);
@@ -59,6 +72,46 @@ public class PicShowUtils {
         return true;
     }
 
+    /**
+     * Hide the toolbar
+     * @param activity
+     * @param needTitle
+     */
+    private static void setNoTitle(Activity activity, boolean needTitle) {
+        if(needTitle)  {
+            activity.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+        } else {
+            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
+    }
+
+    /**
+     * Set display full screen options.
+     * @param activity
+     */
+    public static void setFullScreen(Activity activity) {
+        activity.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        setNoTitle(activity, false);
+    }
+
+    /**
+     * Exit the full screen mode.
+     * @param activity
+     */
+    public static void exitFullScreen(Activity activity) {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        setNoTitle(activity, true);
+    }
+
+    /**
+     * Use merge sort to sort the datas.
+     * @param original src data.
+     * @param desc use DESC or ASC.
+     */
     public static void sortItem(Album[] original,boolean desc) {
         mergeSort(original,0,1);
     }
