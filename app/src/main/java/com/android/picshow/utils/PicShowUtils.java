@@ -5,7 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
-import android.view.Window;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.android.picshow.R;
@@ -74,37 +75,35 @@ public class PicShowUtils {
 
     /**
      * Hide the toolbar
-     * @param activity
+     * @param toolbar
      * @param needTitle
      */
-    private static void setNoTitle(Activity activity, boolean needTitle) {
+    private static void setNoTitle(Toolbar toolbar, boolean needTitle) {
         if(needTitle)  {
-            activity.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+            toolbar.setVisibility(View.VISIBLE);
         } else {
-            activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            toolbar.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public static void extendLayoutToFulScreen(Activity a) {
+        a.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
     }
 
     /**
      * Set display full screen options.
-     * @param activity
+     * @param toolbar
      */
-    public static void setFullScreen(Activity activity) {
-        activity.getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        setNoTitle(activity, false);
+    public static void enterFullScreen(Toolbar toolbar) {
+        setNoTitle(toolbar, false);
     }
 
     /**
      * Exit the full screen mode.
-     * @param activity
+     * @param toolbar
      */
-    public static void exitFullScreen(Activity activity) {
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        setNoTitle(activity, true);
+    public static void exitFullScreen(Toolbar toolbar) {
+        setNoTitle(toolbar, true);
     }
 
     /**

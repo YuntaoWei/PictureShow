@@ -4,6 +4,7 @@
     <dimen name="bigger_front_size">20sp</dimen>
     <dimen name="smaller_front_size">16sp</dimen>
     <dimen name="toobar_height">54dp</dimen>
+    <dimen name="photopage_tool_bar">74dp</dimen>
     <dimen name="topbar_padding">40dp</dimen>
 
 
@@ -16,4 +17,6 @@
     <integer name="album_col_num">2</integer>
     <dimen name="album_col_spaceing">20dp</dimen>
     <dimen name="album_name_count_spacing">40dp</dimen>
+
+    <dimen name="padding_status_bar_height">20dp</dimen>
 </resources>

@@ -41,10 +41,12 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private final static int ENTER_FULL_SCREEN = 0x112;
     private final static int EXIT_FULL_SCREEN = 0x113;
     private Toolbar mToolbar;
+    private boolean fullScreen = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PicShowUtils.extendLayoutToFulScreen(this);
         setContentView(R.layout.picshow_photo_page);
         init();
         initView();
@@ -69,11 +71,11 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                         break;
 
                     case ENTER_FULL_SCREEN:
-                        PicShowUtils.setFullScreen(PhotoActivity.this);
+                        PicShowUtils.enterFullScreen(mToolbar);
                         break;
 
                     case EXIT_FULL_SCREEN:
-                        PicShowUtils.exitFullScreen(PhotoActivity.this);
+                        PicShowUtils.exitFullScreen(mToolbar);
                         break;
                 }
             }
@@ -81,11 +83,19 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         };
     }
 
-    public void enterFullScreen() {
+    private void enterFullScreen() {
         mainHandler.sendEmptyMessage(ENTER_FULL_SCREEN);
     }
 
-    public void setExitFullScreen() {
+    public void toggleFullScreen() {
+        /*if(fullScreen) {
+            exitFullScreen();
+        } else {
+            enterFullScreen();
+        }*/
+    }
+
+    private void exitFullScreen() {
         mainHandler.sendEmptyMessage(EXIT_FULL_SCREEN);
     }
 
@@ -95,6 +105,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         mToolbar = findViewById(R.id.photo_toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationIcon(R.mipmap.ic_back);
+        setTitle("");
     }
 
     @Override
