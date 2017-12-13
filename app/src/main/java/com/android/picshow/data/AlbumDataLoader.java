@@ -37,7 +37,7 @@ public class AlbumDataLoader implements DataLoader {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
-        mSemaphore = new Semaphore(1);
+        mSemaphore = new Semaphore(0);
     }
 
 
@@ -48,7 +48,7 @@ public class AlbumDataLoader implements DataLoader {
         loadTask.start();
 
         if(mSemaphore == null) {
-            mSemaphore = new Semaphore(1);
+            mSemaphore = new Semaphore(0);
         }
         mSemaphore.release();
     }
@@ -89,6 +89,8 @@ public class AlbumDataLoader implements DataLoader {
         public void run() {
             while (true) {
                 try {
+                    if(mSemaphore == null)
+                        continue;
                     mSemaphore.acquire();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -109,7 +111,7 @@ public class AlbumDataLoader implements DataLoader {
 
                     @Override
                     public int compare(PhotoItem o1, PhotoItem o2) {
-                        return (int)(o1.getDateToken() - o2.getDateToken());
+                        return (int)(o2.getDateToken() - o1.getDateToken());
                     }
                 });
                 mListener.finishLoad(allItem);

@@ -35,7 +35,7 @@ public class SortCursor extends CursorWrapper implements Comparator<SortCursor.S
 
     @Override
     public int compare(SortEntry entry1, SortEntry entry2) {
-        return entry2.order - entry1.order;
+        return entry1.order - entry2.order;
     }
 
     public SortCursor(Cursor cursor, int nameColumnIndex) {

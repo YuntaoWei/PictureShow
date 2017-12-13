@@ -3,6 +3,8 @@ package com.android.picshow.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.android.picshow.utils.LogPrinter;
+
 /**
  * Created by yuntao.wei on 2017/11/28.
  * github:https://github.com/YuntaoWei
@@ -10,6 +12,8 @@ import android.os.Parcelable;
  */
 
 public class PhotoItem implements Parcelable {
+
+    private static final String TAG = "PhotoItem";
 
     private int ID;
     private String mTitle;
@@ -66,5 +70,13 @@ public class PhotoItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
+    }
+
+    @Override
+    public String toString() {
+        String s = "ID = "+ID + ", Title = " + mTitle
+                + ", Path = " + mPath;
+        LogPrinter.i(TAG,s);
+        return s;
     }
 }

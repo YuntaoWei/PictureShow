@@ -200,6 +200,7 @@ public class AlbumPage extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            LogPrinter.i("wyt","onItemClick : " + position + "   " + getItem(position));
             Intent intent = new Intent(AlbumPage.this.getApplicationContext(), PhotoActivity.class);
             intent.putExtra(MediaSetUtils.PHOTO_ID, position);
             intent.putExtra(MediaSetUtils.PHOTO_PATH, getItem(position).getPath());
