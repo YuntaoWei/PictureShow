@@ -106,7 +106,7 @@ public class TimeLinePageDataLoader implements DataLoader {
 
                     @Override
                     public int compare(PhotoItem o1, PhotoItem o2) {
-                        return (int)(o1.getDateToken() - o2.getDateToken());
+                        return (int)(o2.getDateToken() - o1.getDateToken());
                     }
                 });
                 mListener.finishLoad(allItem);

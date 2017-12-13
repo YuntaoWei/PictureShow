@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import com.android.picshow.data.LoadListener;
 import com.android.picshow.data.PhotoItem;
 import com.android.picshow.data.TimeLinePageDataLoader;
 import com.android.picshow.utils.LogPrinter;
+import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
 import com.bumptech.glide.load.DecodeFormat;
 
@@ -28,7 +31,7 @@ import com.bumptech.glide.load.DecodeFormat;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class TimeLinePage extends Fragment {
+public class TimeLinePage extends Fragment implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "TimeLinePage";
     public static final int UPDATE = 0x111;
@@ -153,6 +156,18 @@ public class TimeLinePage extends Fragment {
             }
 
         });
+
+        gridView.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        LogPrinter.i("wyt","onItemClick : " + position + "   " + gridAdapter.getItem(position));
+        Intent intent = new Intent(getActivity(), PhotoActivity.class);
+        intent.putExtra(MediaSetUtils.PHOTO_ID, position);
+        intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
+        intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
+        startActivity(intent);
     }
 
     private class GridAdapter extends BaseAdapter {
