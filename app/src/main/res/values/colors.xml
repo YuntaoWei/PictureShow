@@ -8,7 +8,7 @@
 
     <color name="select_background">#E3E3E3</color>
 
-    <color name="photopage_toolbar_color">#80000000</color>
-    <color name="photopage_background">#CCCCCC</color>
+    <color name="photopage_toolbar_color">#8099ccff</color>
+    <color name="photopage_background">#F3F3F3</color>
 
 </resources>

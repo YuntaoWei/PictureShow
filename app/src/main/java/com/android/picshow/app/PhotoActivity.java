@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
@@ -105,6 +106,12 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         mToolbar = findViewById(R.id.photo_toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationIcon(R.mipmap.ic_back);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         setTitle("");
     }
 
