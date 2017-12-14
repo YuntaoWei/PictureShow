@@ -29,6 +29,11 @@ public class PicShowActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void initView(){
         topBar = (Toolbar)findViewById(R.id.topbar);
         setSupportActionBar(topBar);

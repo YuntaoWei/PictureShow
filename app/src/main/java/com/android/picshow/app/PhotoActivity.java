@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
@@ -27,7 +28,7 @@ import com.github.chrisbanes.photoview.PhotoView;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.PhotoLoadListener {
+public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.PhotoLoadListener, View.OnClickListener {
 
     private static final String TAG = "PhotoActivity";
 
@@ -45,6 +46,8 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private Toolbar mToolbar;
     private boolean fullScreen = false;
     private View rootView;
+    private View bottomView;
+    private Button btnShare,btnEdit,btnDelete,btnMore;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,11 +95,24 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
             exitFullScreen();
         } else {
             enterFullScreen();
+
         }
     }
 
+    private void toggleBottomView() {
+        if(bottomView == null)
+            return;
+
+        if(bottomView.getVisibility() == View.VISIBLE)
+            bottomView.setVisibility(View.GONE);
+        else
+            bottomView.setVisibility(View.VISIBLE);
+    }
+
     private void enterFullScreen() {
-        if(mToolbar == null || rootView == null) return;
+        if(mToolbar == null || rootView == null || bottomView == null) return;
+
+        //bottomView.setVisibility(View.GONE);
 
         int flag = View.SYSTEM_UI_FLAG_LOW_PROFILE;
         if(ApiHelper.HAS_VIEW_SYSTEM_UI_FLAG_LAYOUT_STABLE)
@@ -108,25 +124,29 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     }
 
     private void exitFullScreen() {
-        if(mToolbar == null || rootView == null) return;
+        if(mToolbar == null || rootView == null || bottomView == null) return;
+
+        //bottomView.setVisibility(View.VISIBLE);
+
         mToolbar.setVisibility(View.VISIBLE);
         rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         fullScreen = false;
     }
 
     private void initView() {
+        bottomView = findViewById(R.id.bottom_view);
         photoPager = findViewById(R.id.photo_pager);
         photoPager.setOffscreenPageLimit(PicShowUtils.MAX_LOAD);
         photoPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                bottomView.setVisibility(View.GONE);
             }
 
             @Override
             public void onPageSelected(int position) {
-
+                currentID = position;
             }
 
             @Override
@@ -135,6 +155,16 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
             }
 
         });
+
+        btnShare = findViewById(R.id.share);
+        btnEdit = findViewById(R.id.edit);
+        btnDelete = findViewById(R.id.delete);
+        btnMore = findViewById(R.id.more);
+
+        btnShare.setOnClickListener(this);
+        btnEdit.setOnClickListener(this);
+        btnDelete.setOnClickListener(this);
+        btnMore.setOnClickListener(this);
 
 
         mToolbar = findViewById(R.id.photo_toolbar);
@@ -187,5 +217,33 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         LogPrinter.i(TAG, "loadFinish:" + cursor.getCount());
         photoPageAdapter = new PhotoPageAdapter(getApplicationContext(), getSupportFragmentManager(), cursor);
         mainHandler.sendEmptyMessage(UPDATE);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if(photoPageAdapter == null) return;
+
+        Object item = photoPageAdapter.getDataItem(currentID);
+        LogPrinter.i("wyt","onClick:" + currentID + "    " + item);
+
+        switch (v.getId()) {
+            case R.id.share:
+
+                break;
+
+            case R.id.edit:
+
+                break;
+
+            case R.id.delete:
+
+                break;
+
+            case R.id.more:
+
+                break;
+        }
+
     }
 }
