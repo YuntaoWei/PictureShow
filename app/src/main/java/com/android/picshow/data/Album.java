@@ -28,6 +28,10 @@ public class Album {
         this.count = count;
     }
 
+    public void addCount(int add) {
+        count += add;
+    }
+
     public String getLocalizedName() {
         return bucketDisplayName;
     }

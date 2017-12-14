@@ -56,7 +56,8 @@ public class MediaSetUtils {
             MediaStore.Images.Media.BUCKET_ID,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
             MediaStore.Images.Media.DATE_TAKEN,
-            MediaStore.Images.Media.DATA
+            MediaStore.Images.Media.DATA,
+            "count(*)"
     };
     private static final int ALBUM_BUCKET_INDEX = 0;
     private static final int ALBUM_NAME_INDEX = 1;
@@ -69,12 +70,12 @@ public class MediaSetUtils {
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
             MediaStore.Images.Media.DATE_TAKEN,
             MediaStore.Images.Media.DATA,
-            MediaStore.Files.FileColumns.MEDIA_TYPE,
-            "count(*)"
+            "count(*)",
+            MediaStore.Files.FileColumns.MEDIA_TYPE
     };
 
-    private static final int ALBUM_MEDIA_TYPE = 4;
-    private static final int ALBUM_COUNT_INDEX = 5;
+    private static final int ALBUM_COUNT_INDEX = 4;
+    private static final int ALBUM_MEDIA_TYPE = 5;
 
 
 
@@ -159,6 +160,13 @@ public class MediaSetUtils {
         return null;
     }
 
+    public static Album[] getAllAlbum(Context ctx) {
+        if(ApiHelper.HAS_MEDIA_PROVIDER_FILES_TABLE && false)
+            return MediaSetUtils.queryAllAlbumSetFromFileTable(ctx);
+        else
+            return MediaSetUtils.queryAllAlbumSet(ctx);
+    }
+
 
     public static Album[] queryAllAlbumSetFromFileTable(Context mContext) {
         int type = 2 | 4;
@@ -217,7 +225,8 @@ public class MediaSetUtils {
                 allAlbum.put(bucket,new Album(bucket,
                         cImage.getString(ALBUM_NAME_INDEX),
                         cImage.getInt(ALBUM_DATE_INDEX),
-                        cImage.getString(ALBUM_DATA_INDEX)));
+                        cImage.getString(ALBUM_DATA_INDEX),
+                        cImage.getInt(ALBUM_COUNT_INDEX)));
             }
         } finally {
             cImage.close();
@@ -238,13 +247,22 @@ public class MediaSetUtils {
                 int bucket = cVideo.getInt(ALBUM_BUCKET_INDEX);
                 //Maybe there are some videos and images in the same folder,
                 //Prevent add repeatedly.
-                if(allAlbum.get(bucket) != null) {
-                    continue;
+                Album newAlbum = allAlbum.get(bucket);
+                int dateToken = cVideo.getInt(ALBUM_DATE_INDEX);
+                int count = cVideo.getInt(ALBUM_COUNT_INDEX);
+                if(newAlbum != null) {
+                    if(newAlbum.dateToken > dateToken) {
+                        newAlbum.addCount(count);
+                        continue;
+                    }
+                    else
+                        allAlbum.remove(bucket);
                 }
                 allAlbum.put(bucket,new Album(bucket,
                         cVideo.getString(ALBUM_NAME_INDEX),
-                        cVideo.getInt(ALBUM_DATE_INDEX),
-                        cVideo.getString(ALBUM_DATA_INDEX)));
+                        dateToken,
+                        cVideo.getString(ALBUM_DATA_INDEX),
+                        count + newAlbum.count));
 
             }
         } finally {

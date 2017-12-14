@@ -133,6 +133,9 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(mAdapter != null)
+            mAdapter.destroy();
+        mAdapter = null;
     }
 
     @Override

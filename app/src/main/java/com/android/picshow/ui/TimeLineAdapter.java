@@ -1,6 +1,7 @@
 package com.android.picshow.ui;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -28,14 +29,19 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
     private PhotoItem[] datas = new PhotoItem[0];
     private Activity attachActivity;
     private int thubNailSize = 0;
+    private Resources mRes;
+    private int currentHeadCount = 0;
+    private String pattern;
 
     public TimeLineAdapter(Activity a) {
-        attachActivity = a;
+        this(a, null);
     }
 
     public TimeLineAdapter(Activity a, PhotoItem[] items) {
         attachActivity = a;
-        datas = items;
+        pattern = a.getString(R.string.timeline_title_format);
+        datas = items == null ? datas : items;
+        mRes = a.getResources();
     }
 
     public void setData(PhotoItem[] items) {
@@ -43,12 +49,19 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
         notifyDataSetChanged();
     }
 
+    public void destroy() {
+        attachActivity = null;
+        mRes = null;
+        datas = null;
+        System.gc();
+    }
+
     public void setDecodeSize(int size) {
         thubNailSize = size;
     }
 
     public long getTimeId(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        SimpleDateFormat sdf = new SimpleDateFormat(mRes.getString(R.string.timeline_title_format));
         Date mDate = null;
 
         try {
@@ -61,8 +74,8 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
     }
 
     @Override
-    public long getHeaderId(int i) {
-        return getTimeId(getItem(i).getDateAdd());
+    public long getHeaderId(int position) {
+        return getTimeId(getItem(position).getDateAdd(pattern));
     }
 
     @Override
@@ -72,14 +85,15 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
             mHeadViewHolder = new HeaderViewHolder();
             convertView = attachActivity.getLayoutInflater().inflate(R.layout.picshow_item_time_header,null);
 
-            mHeadViewHolder.tvTimeHeader = (TextView) convertView.findViewById(R.id.tv_time_header);
+            mHeadViewHolder.tvTimeHeader = convertView.findViewById(R.id.tv_time_header);
+            mHeadViewHolder.tvCount = convertView.findViewById(R.id.count);
 
             convertView.setTag(mHeadViewHolder);
         }else {
             mHeadViewHolder = (HeaderViewHolder)convertView.getTag();
         }
 
-        mHeadViewHolder.tvTimeHeader.setText(getItem(position).getDateAdd());
+        mHeadViewHolder.tvTimeHeader.setText(getItem(position).getDateAdd(pattern));
 
         return convertView;
     }
@@ -140,6 +154,7 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
 
     private class HeaderViewHolder {
         public TextView tvTimeHeader;
+        public TextView tvCount;
     }
 
     private class ViewHolder {

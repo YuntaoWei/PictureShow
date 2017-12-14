@@ -81,7 +81,7 @@ public class PhotoViewFragment extends Fragment {
         mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LogPrinter.i(TAG, "PhotoView onclick!");
+                ((PhotoActivity)getActivity()).toggleFullScreen();
             }
         });
     }

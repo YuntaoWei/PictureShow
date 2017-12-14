@@ -15,6 +15,7 @@ import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.PhotoDataLoader;
+import com.android.picshow.utils.ApiHelper;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
@@ -43,12 +44,14 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private final static int EXIT_FULL_SCREEN = 0x113;
     private Toolbar mToolbar;
     private boolean fullScreen = false;
+    private View rootView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PicShowUtils.extendLayoutToFulScreen(this);
-        setContentView(R.layout.picshow_photo_page);
+        rootView = getLayoutInflater().inflate(R.layout.picshow_photo_page, null);
+        setContentView(rootView);
         init();
         initView();
     }
@@ -84,25 +87,56 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         };
     }
 
-    private void enterFullScreen() {
-        mainHandler.sendEmptyMessage(ENTER_FULL_SCREEN);
-    }
-
     public void toggleFullScreen() {
-        /*if(fullScreen) {
+        if(fullScreen) {
             exitFullScreen();
         } else {
             enterFullScreen();
-        }*/
+        }
+    }
+
+    private void enterFullScreen() {
+        if(mToolbar == null || rootView == null) return;
+
+        int flag = View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        if(ApiHelper.HAS_VIEW_SYSTEM_UI_FLAG_LAYOUT_STABLE)
+            flag = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+
+        mToolbar.setVisibility(View.INVISIBLE);
+        rootView.setSystemUiVisibility(flag);
+        fullScreen = true;
     }
 
     private void exitFullScreen() {
-        mainHandler.sendEmptyMessage(EXIT_FULL_SCREEN);
+        if(mToolbar == null || rootView == null) return;
+        mToolbar.setVisibility(View.VISIBLE);
+        rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        fullScreen = false;
     }
 
     private void initView() {
         photoPager = findViewById(R.id.photo_pager);
         photoPager.setOffscreenPageLimit(PicShowUtils.MAX_LOAD);
+        photoPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+
+        });
+
+
         mToolbar = findViewById(R.id.photo_toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationIcon(R.mipmap.ic_back);
@@ -128,6 +162,13 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         if(mLoader != null)
             mLoader.pause();
         GlideApp.get(getApplicationContext()).clearMemory();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(fullScreen)
+            exitFullScreen();
     }
 
     @Override

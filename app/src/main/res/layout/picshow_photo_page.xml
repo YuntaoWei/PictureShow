@@ -16,4 +16,8 @@
         android:paddingTop="@dimen/padding_status_bar_height"
         android:layout_height="@dimen/photopage_tool_bar"></android.support.v7.widget.Toolbar>
 
+    <include
+        layout="@layout/photopage_bottom_controls"
+        />
+
 </FrameLayout>

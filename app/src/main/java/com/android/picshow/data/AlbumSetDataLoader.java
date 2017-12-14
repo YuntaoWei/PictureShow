@@ -98,7 +98,7 @@ public class AlbumSetDataLoader implements DataLoader {
                 if(!notifier.isDirty())
                     continue;
                 mListener.startLoad();
-                Album[] allAlbum = MediaSetUtils.queryAllAlbumSetFromFileTable(mContext);
+                Album[] allAlbum = MediaSetUtils.getAllAlbum(mContext);
                 LogPrinter.i(TAG,"LoadThread load complete:"+allAlbum.length);
                 PicShowUtils.sortItem(allAlbum,true);
                 mListener.finishLoad(allAlbum);

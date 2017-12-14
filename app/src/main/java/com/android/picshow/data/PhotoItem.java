@@ -1,9 +1,11 @@
 package com.android.picshow.data;
 
+import android.content.res.Resources;
 import android.media.MediaFormat;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.android.picshow.R;
 import com.android.picshow.utils.LogPrinter;
 
 import java.text.SimpleDateFormat;
@@ -71,8 +73,8 @@ public class PhotoItem implements Parcelable {
         dateAdd = add;
     }
 
-    public String getDateAdd() {
-        return new SimpleDateFormat("yyyy年MM月dd日")
+    public String getDateAdd(String pattern) {
+        return new SimpleDateFormat(pattern)
                 .format(new Date(dateAdd*1000L));
     }
 

@@ -94,6 +94,9 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(gridAdapter != null)
+            gridAdapter.destroy();
+        gridAdapter = null;
     }
 
     private void init() {

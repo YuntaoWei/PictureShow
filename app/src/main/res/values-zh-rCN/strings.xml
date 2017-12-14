@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">图片浏览</string>
-    <string name="btn_photo">照片</string>
-    <string name="btn_album">相册</string>
+    <string name="app_name">"相册"</string>
+    <string name="btn_photo">"照片"</string>
+    <string name="btn_album">"相册"</string>
+    <string name="timeline_title_format">"yyyy年MM月dd日"</string>
+
+    <string name="share">分享</string>
+    <string name="edit">编辑</string>
+    <string name="delete">删除</string>
+    <string name="more">更多</string>
 </resources>
