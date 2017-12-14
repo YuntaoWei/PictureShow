@@ -9,21 +9,18 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import com.android.picshow.R;
 import com.android.picshow.data.AlbumDataLoader;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.LoadListener;
 import com.android.picshow.data.PhotoItem;
+import com.android.picshow.ui.TimeLineAdapter;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
-import com.bumptech.glide.load.DecodeFormat;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -31,13 +28,13 @@ import com.bumptech.glide.load.DecodeFormat;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class AlbumPage extends AppCompatActivity {
+public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "AlbumPage";
 
     private static final int UPDATE = 0x111;
     private GridView gridView;
-    private GridAdapter mAdapter;
+    private TimeLineAdapter mAdapter;
     private int decodeBitmapWidth;
     private LoadListener myLoadListener;
     private Handler mainHandler;
@@ -120,7 +117,8 @@ public class AlbumPage extends AppCompatActivity {
             }
         });
         setTitle(getIntent().getStringExtra(MediaSetUtils.SET_NAME));
-        mAdapter = new GridAdapter();
+        mAdapter = new TimeLineAdapter(this);
+        //mAdapter.setDecodeSize(decodeBitmapWidth);
         mAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -129,7 +127,7 @@ public class AlbumPage extends AppCompatActivity {
         });
 
         gridView.setAdapter(mAdapter);
-        gridView.setOnItemClickListener(mAdapter);
+        gridView.setOnItemClickListener(this);
     }
 
     @Override
@@ -137,85 +135,13 @@ public class AlbumPage extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private class GridAdapter extends BaseAdapter implements AdapterView.OnItemClickListener,
-            AdapterView.OnItemLongClickListener{
-
-        private PhotoItem[] datas = new PhotoItem[0];
-
-        public GridAdapter() {}
-
-        public GridAdapter(PhotoItem[] items) {
-            datas = items;
-        }
-
-        public void setData(PhotoItem[] items) {
-            datas = items;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return datas.length;
-        }
-
-        @Override
-        public PhotoItem getItem(int position) {
-            return datas[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return datas[position].getID();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LogPrinter.i(TAG,"getView:"+position);
-            ViewHolder v = null;
-            if(convertView != null) {
-                v = (ViewHolder)convertView.getTag();
-                if(v == null) {
-                    v = new ViewHolder();
-                    v.imgView = convertView.findViewById(R.id.img);
-                }
-            } else {
-                convertView = getLayoutInflater().inflate(R.layout.picshow_img_item,null);
-                v = new ViewHolder();
-                v.imgView = convertView.findViewById(R.id.img);
-            }
-            convertView.setTag(v);
-            if(v != null && v.imgView != null) {
-                LogPrinter.i(TAG,"call glide to load and show image:"+getItem(position).getPath());
-                GlideApp.with(AlbumPage.this)
-                        .load(getItem(position).getPath())
-                        .override(decodeBitmapWidth,decodeBitmapWidth)
-                        .placeholder(R.drawable.other)
-                        .centerCrop()
-                        .dontAnimate()
-                        .format(DecodeFormat.PREFER_RGB_565)
-                        .into(v.imgView);
-            }
-            return convertView;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            LogPrinter.i("wyt","onItemClick : " + position + "   " + getItem(position));
-            Intent intent = new Intent(AlbumPage.this.getApplicationContext(), PhotoActivity.class);
-            intent.putExtra(MediaSetUtils.PHOTO_ID, position);
-            intent.putExtra(MediaSetUtils.PHOTO_PATH, getItem(position).getPath());
-            intent.putExtra(MediaSetUtils.BUCKET, bucketID);
-            startActivity(intent);
-        }
-
-        @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            return false;
-        }
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        PhotoItem item = mAdapter.getItem(position);
+        Intent intent = new Intent(this, PhotoActivity.class);
+        intent.putExtra(MediaSetUtils.PHOTO_ID, position);
+        intent.putExtra(MediaSetUtils.PHOTO_PATH, item.getPath());
+        intent.putExtra(MediaSetUtils.BUCKET, bucketID);
+        startActivity(intent);
     }
-
-    private class ViewHolder {
-        public ImageView imgView;
-    }
-
 }

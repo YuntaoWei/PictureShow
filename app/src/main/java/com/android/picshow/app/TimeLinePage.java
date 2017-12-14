@@ -11,19 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import com.android.picshow.R;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.LoadListener;
 import com.android.picshow.data.PhotoItem;
 import com.android.picshow.data.TimeLinePageDataLoader;
+import com.android.picshow.ui.TimeLineAdapter;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
-import com.bumptech.glide.load.DecodeFormat;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -42,7 +40,7 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     private Handler mainHandler;
     private View rootView;
     private GridView gridView;
-    private GridAdapter gridAdapter;
+    private TimeLineAdapter gridAdapter;
     private int decodeBitmapWidth;
 
 
@@ -141,7 +139,8 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
     private void initView() {
         gridView = (GridView) rootView.findViewById(R.id.grid);
-        gridAdapter = new GridAdapter();
+        gridAdapter = new TimeLineAdapter(getActivity());
+        gridAdapter.setDecodeSize(decodeBitmapWidth);
         gridView.setAdapter(gridAdapter);
         gridAdapter.registerDataSetObserver(new DataSetObserver() {
 
@@ -162,80 +161,10 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        LogPrinter.i("wyt","onItemClick : " + position + "   " + gridAdapter.getItem(position));
         Intent intent = new Intent(getActivity(), PhotoActivity.class);
         intent.putExtra(MediaSetUtils.PHOTO_ID, position);
         intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
         intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
         startActivity(intent);
     }
-
-    private class GridAdapter extends BaseAdapter {
-
-        private PhotoItem[] mDatas;
-
-        public GridAdapter() {
-            mDatas = new PhotoItem[0];
-        }
-
-        public GridAdapter(PhotoItem[] datas) {
-            mDatas = datas;
-        }
-
-        public void setData(PhotoItem[] items) {
-            mDatas = items;
-            GridAdapter.this.notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return mDatas.length;
-        }
-
-        @Override
-        public PhotoItem getItem(int position) {
-            return mDatas[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LogPrinter.i(TAG,"getView:"+position);
-            ViewHolder v = null;
-            if(convertView != null) {
-                v = (ViewHolder)convertView.getTag();
-                if(v == null) {
-                    v = new ViewHolder();
-                    v.imgView = convertView.findViewById(R.id.img);
-                }
-            } else {
-                convertView = getLayoutInflater().inflate(R.layout.picshow_img_item,null);
-                v = new ViewHolder();
-                v.imgView = convertView.findViewById(R.id.img);
-            }
-            convertView.setTag(v);
-            if(v != null && v.imgView != null) {
-                LogPrinter.i(TAG,"call glide to load and show image:"+getItem(position).getPath());
-                GlideApp.with(TimeLinePage.this)
-                        .load(getItem(position).getPath())
-                        .override(decodeBitmapWidth,decodeBitmapWidth)
-                        .placeholder(R.drawable.other)
-                        .centerCrop()
-                        .dontAnimate()
-                        .format(DecodeFormat.PREFER_RGB_565)
-                        .into(v.imgView);
-            }
-            return convertView;
-        }
-
-    }
-
-    private class ViewHolder {
-        public ImageView imgView;
-    }
-
 }

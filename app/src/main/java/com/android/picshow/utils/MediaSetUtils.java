@@ -41,12 +41,14 @@ public class MediaSetUtils {
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATA,
-            MediaStore.Images.Media.DATE_TAKEN
+            MediaStore.Images.Media.DATE_TAKEN,
+            MediaStore.Images.Media.DATE_ADDED
     };
     private static final int INDEX_ID = 0;
     private static final int INDEX_DISPLAY_NAME = 1;
     private static final int INDEX_DATA = 2;
     private static final int INDEX_DATE = 3;
+    private static final int INDEX_DATE_ADD = 4;
     /** for PhotoItem----end **/
 
     /** for Album----start **/
@@ -103,7 +105,8 @@ public class MediaSetUtils {
                         c.getInt(INDEX_ID),
                         c.getString(INDEX_DISPLAY_NAME),
                         c.getString(INDEX_DATA),
-                        c.getLong(INDEX_DATE)));
+                        c.getLong(INDEX_DATE),
+                        c.getLong(INDEX_DATE_ADD)));
             }
         } finally {
             c.close();
@@ -130,7 +133,8 @@ public class MediaSetUtils {
                         c.getInt(INDEX_ID),
                         c.getString(INDEX_DISPLAY_NAME),
                         c.getString(INDEX_DATA),
-                        c.getLong(INDEX_DATE)));
+                        c.getLong(INDEX_DATE),
+                        c.getLong(INDEX_DATE_ADD)));
             }
         } finally {
             c.close();

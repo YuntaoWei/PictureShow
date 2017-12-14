@@ -1,9 +1,13 @@
 package com.android.picshow.data;
 
+import android.media.MediaFormat;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.android.picshow.utils.LogPrinter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -19,14 +23,16 @@ public class PhotoItem implements Parcelable {
     private String mTitle;
     private String mPath;
     private long dateToken;
+    private long dateAdd;
 
     public PhotoItem() {}
 
-    public PhotoItem(int id, String title, String path, long date) {
+    public PhotoItem(int id, String title, String path, long date, long add) {
         ID = id;
         mTitle = title;
         mPath = path;
         dateToken = date;
+        dateAdd = add;
     }
 
     public int getID() {
@@ -61,6 +67,14 @@ public class PhotoItem implements Parcelable {
         this.dateToken = dateToken;
     }
 
+    public void setDateAdd(long add ) {
+        dateAdd = add;
+    }
+
+    public String getDateAdd() {
+        return new SimpleDateFormat("yyyy年MM月dd日")
+                .format(new Date(dateAdd*1000L));
+    }
 
     @Override
     public int describeContents() {

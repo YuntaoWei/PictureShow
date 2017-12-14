@@ -15,11 +15,11 @@
         >
     </android.support.v7.widget.Toolbar>
 
-    <GridView
+    <com.trustyapp.gridheaders.TrustyGridGridView
         android:layout_marginTop="@dimen/row_spaceing"
         android:id="@+id/grid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:listSelector="@drawable/course_list_selector"
         android:numColumns="@integer/col_num"
         android:verticalSpacing="@dimen/row_spaceing"/>
