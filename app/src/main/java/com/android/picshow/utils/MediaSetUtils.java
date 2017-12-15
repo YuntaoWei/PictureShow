@@ -162,9 +162,9 @@ public class MediaSetUtils {
 
     public static Album[] getAllAlbum(Context ctx) {
         if(ApiHelper.HAS_MEDIA_PROVIDER_FILES_TABLE && false)
-            return MediaSetUtils.queryAllAlbumSetFromFileTable(ctx);
+            return queryAllAlbumSetFromFileTable(ctx);
         else
-            return MediaSetUtils.queryAllAlbumSet(ctx);
+            return queryAllAlbumSet(ctx);
     }
 
 
@@ -262,7 +262,7 @@ public class MediaSetUtils {
                         cVideo.getString(ALBUM_NAME_INDEX),
                         dateToken,
                         cVideo.getString(ALBUM_DATA_INDEX),
-                        count + newAlbum.count));
+                        count + (newAlbum == null ? 0 : newAlbum.count)));
 
             }
         } finally {

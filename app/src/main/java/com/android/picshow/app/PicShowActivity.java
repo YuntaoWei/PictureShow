@@ -88,4 +88,5 @@ public class PicShowActivity extends BaseActivity implements View.OnClickListene
                 break;
         }
     }
+
 }

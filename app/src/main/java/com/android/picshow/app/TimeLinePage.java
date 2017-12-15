@@ -29,7 +29,7 @@ import com.android.picshow.utils.PicShowUtils;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class TimeLinePage extends Fragment implements AdapterView.OnItemClickListener {
+public class TimeLinePage extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private static final String TAG = "TimeLinePage";
     public static final int UPDATE = 0x111;
@@ -40,6 +40,7 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     private Handler mainHandler;
     private View rootView;
     private GridView gridView;
+    private View bottomView;
     private TimeLineAdapter gridAdapter;
     private int decodeBitmapWidth;
 
@@ -142,6 +143,7 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
     private void initView() {
         gridView = (GridView) rootView.findViewById(R.id.grid);
+        bottomView = rootView.findViewById(R.id.bottom_layout);
         gridAdapter = new TimeLineAdapter(getActivity());
         gridAdapter.setDecodeSize(decodeBitmapWidth);
         gridView.setAdapter(gridAdapter);
@@ -160,6 +162,7 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
         });
 
         gridView.setOnItemClickListener(this);
+        gridView.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -169,5 +172,12 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
         intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
         intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        bottomView.setVisibility(View.VISIBLE);
+
+        return true;
     }
 }

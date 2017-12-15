@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/photopage_tool_bar"
-    android:background="@color/photopage_toolbar_color"
     android:orientation="horizontal"
     android:elevation="@dimen/bottom_menu_elevation"
     android:layout_gravity="bottom"
     android:gravity="center_vertical"
+    android:background="@color/bottom_menu_color_white"
+    android:visibility="gone"
     >
 
     <Button
