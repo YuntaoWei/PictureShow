@@ -1,11 +1,8 @@
 package com.android.picshow.data;
 
-import android.content.res.Resources;
-import android.media.MediaFormat;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.android.picshow.R;
 import com.android.picshow.utils.LogPrinter;
 
 import java.text.SimpleDateFormat;
@@ -26,15 +23,26 @@ public class PhotoItem implements Parcelable {
     private String mPath;
     private long dateToken;
     private long dateAdd;
+    private int itemType;
 
     public PhotoItem() {}
 
-    public PhotoItem(int id, String title, String path, long date, long add) {
+    public PhotoItem(int id, String title, String path, long date, long add, int type) {
         ID = id;
         mTitle = title;
         mPath = path;
         dateToken = date;
         dateAdd = add;
+        itemType = type;
+    }
+
+    protected PhotoItem(Parcel in) {
+        ID = in.readInt();
+        mTitle = in.readString();
+        mPath = in.readString();
+        dateToken = in.readLong();
+        dateAdd = in.readLong();
+        itemType = in.readInt();
     }
 
     public int getID() {
@@ -78,6 +86,26 @@ public class PhotoItem implements Parcelable {
                 .format(new Date(dateAdd*1000L));
     }
 
+    public int getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(int itemType) {
+        this.itemType = itemType;
+    }
+
+    public static final Creator<PhotoItem> CREATOR = new Creator<PhotoItem>() {
+        @Override
+        public PhotoItem createFromParcel(Parcel in) {
+            return new PhotoItem(in);
+        }
+
+        @Override
+        public PhotoItem[] newArray(int size) {
+            return new PhotoItem[size];
+        }
+    };
+
     @Override
     public int describeContents() {
         return 0;
@@ -85,7 +113,12 @@ public class PhotoItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeInt(ID);
+        dest.writeString(mTitle);
+        dest.writeString(mPath);
+        dest.writeLong(dateToken);
+        dest.writeLong(dateAdd);
+        dest.writeInt(itemType);
     }
 
     @Override

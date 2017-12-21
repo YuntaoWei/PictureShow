@@ -32,6 +32,10 @@ public class MediaSetUtils {
     public static final String PHOTO_ID = "_id";
     public static final String PHOTO_PATH = "_path";
 
+    public static final int TYPE_IMAGE = 0X001;
+    public static final int TYPE_VIDEO = 0X002;
+    public static final int TYPE_GIF = 0X010;
+
 
     public static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     public static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
@@ -107,7 +111,8 @@ public class MediaSetUtils {
                         c.getString(INDEX_DISPLAY_NAME),
                         c.getString(INDEX_DATA),
                         c.getLong(INDEX_DATE),
-                        c.getLong(INDEX_DATE_ADD)));
+                        c.getLong(INDEX_DATE_ADD),
+                        TYPE_IMAGE));
             }
         } finally {
             c.close();
@@ -135,7 +140,8 @@ public class MediaSetUtils {
                         c.getString(INDEX_DISPLAY_NAME),
                         c.getString(INDEX_DATA),
                         c.getLong(INDEX_DATE),
-                        c.getLong(INDEX_DATE_ADD)));
+                        c.getLong(INDEX_DATE_ADD),
+                        TYPE_VIDEO));
             }
         } finally {
             c.close();
@@ -145,8 +151,19 @@ public class MediaSetUtils {
     public static Cursor queryAllItemByBucketID(ContentResolver cr, int bucket) {
         Cursor result = null;
         Cursor[] results = new Cursor[2];
-        results[0] = cr.query(IMAGE_URI, PROJECTION, WHERE, new String[]{bucket+""}, DEFAULT_SORT_ODER);
-        results[1] = cr.query(VIDEO_URI, PROJECTION, WHERE, new String[]{bucket+""}, DEFAULT_SORT_ODER);
+
+        results[0] = cr.query(IMAGE_URI, new String[]{
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.MIME_TYPE
+        }, WHERE, new String[]{bucket+""}, DEFAULT_SORT_ODER);
+
+        results[1] = cr.query(VIDEO_URI, new String[]{
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.DATA,
+                MediaStore.Images.Media.MIME_TYPE
+        }, WHERE, new String[]{bucket+""}, DEFAULT_SORT_ODER);
+
         if(results[0] != null) {
             if(results[1] != null)
                 result = new MergeCursor(results);

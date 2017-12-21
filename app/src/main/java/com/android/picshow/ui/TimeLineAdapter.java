@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.android.picshow.R;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.PhotoItem;
+import com.android.picshow.utils.MediaSetUtils;
 import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.signature.MediaStoreSignature;
 import com.trustyapp.gridheaders.TrustyGridSimpleAdapter;
 
 import java.text.ParseException;
@@ -116,16 +118,19 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder v = null;
+        int type = getItem(position).getItemType();
         if(convertView != null) {
             v = (ViewHolder)convertView.getTag();
             if(v == null) {
                 v = new ViewHolder();
                 v.imgView = convertView.findViewById(R.id.img);
+                v.videoIcon = convertView.findViewById(R.id.videoIcon);
             }
         } else {
             convertView = attachActivity.getLayoutInflater().inflate(R.layout.picshow_img_item,null);
             v = new ViewHolder();
             v.imgView = convertView.findViewById(R.id.img);
+            v.videoIcon = convertView.findViewById(R.id.videoIcon);
         }
         convertView.setTag(v);
         if(v != null && v.imgView != null) {
@@ -145,9 +150,14 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
                         .centerCrop()
                         .dontAnimate()
                         .format(DecodeFormat.PREFER_RGB_565)
-                        //.signature(new MediaStoreSignature("",getItem(position).getDateToken(), 0))
+                        .signature(new MediaStoreSignature(type == MediaSetUtils.TYPE_VIDEO ? "video/*" : "image/*"
+                                ,getItem(position).getDateToken(), 0))
                         .into(v.imgView);
             }
+            if(type == MediaSetUtils.TYPE_VIDEO)
+                v.videoIcon.setVisibility(View.VISIBLE);
+            else
+                v.videoIcon.setVisibility(View.GONE);
         }
         return convertView;
     }
@@ -159,6 +169,7 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
 
     private class ViewHolder {
         public ImageView imgView;
+        public ImageView videoIcon;
     }
 
 }
