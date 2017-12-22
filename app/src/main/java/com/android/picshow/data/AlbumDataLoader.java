@@ -111,7 +111,7 @@ public class AlbumDataLoader implements DataLoader {
 
                     @Override
                     public int compare(PhotoItem o1, PhotoItem o2) {
-                        return (int)(o2.getDateToken() - o1.getDateToken());
+                        return (int)(o1.getDateToken() - o2.getDateToken());
                     }
                 });
                 mListener.finishLoad(allItem);

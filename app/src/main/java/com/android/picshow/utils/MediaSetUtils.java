@@ -178,7 +178,7 @@ public class MediaSetUtils {
     }
 
     public static Album[] getAllAlbum(Context ctx) {
-        if(ApiHelper.HAS_MEDIA_PROVIDER_FILES_TABLE && false)
+        if(ApiHelper.HAS_MEDIA_PROVIDER_FILES_TABLE)
             return queryAllAlbumSetFromFileTable(ctx);
         else
             return queryAllAlbumSet(ctx);
@@ -193,7 +193,7 @@ public class MediaSetUtils {
                 ALBUM_PROJECTION_FROM_TABLE,
                 ALBUM_GROUP_BY,
                 null,
-                DEFAULT_SORT_ODER);
+                /*DEFAULT_SORT_ODER*/null);
 
         int typeBits = 0;
         if ((type & 2) != 0) {
@@ -270,6 +270,7 @@ public class MediaSetUtils {
                 if(newAlbum != null) {
                     if(newAlbum.dateToken > dateToken) {
                         newAlbum.addCount(count);
+                        newAlbum.absPath = cVideo.getString(ALBUM_DATA_INDEX);
                         continue;
                     }
                     else
