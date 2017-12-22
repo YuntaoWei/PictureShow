@@ -124,7 +124,7 @@ public class PhotoItem implements Parcelable {
     @Override
     public String toString() {
         String s = "ID = "+ID + ", Title = " + mTitle
-                + ", Path = " + mPath;
+                + ", Path = " + mPath + ", type = " + itemType;
         LogPrinter.i(TAG,s);
         return s;
     }
