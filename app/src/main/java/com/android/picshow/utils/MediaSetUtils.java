@@ -270,7 +270,7 @@ public class MediaSetUtils {
                 if(newAlbum != null) {
                     if(newAlbum.dateToken > dateToken) {
                         newAlbum.addCount(count);
-                        newAlbum.absPath = cVideo.getString(ALBUM_DATA_INDEX);
+                        //newAlbum.absPath = cVideo.getString(ALBUM_DATA_INDEX);
                         continue;
                     }
                     else

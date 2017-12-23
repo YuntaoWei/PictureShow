@@ -28,6 +28,12 @@ public class Album {
         this.count = count;
     }
 
+    @Override
+    public String toString() {
+        return "id : " + bucketID + ", name : " + bucketDisplayName
+                + ", date : " + dateToken + ", path = " + absPath + ", count : " + count;
+    }
+
     public void addCount(int add) {
         count += add;
     }
