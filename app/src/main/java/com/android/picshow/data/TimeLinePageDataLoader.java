@@ -35,7 +35,6 @@ public class TimeLinePageDataLoader implements DataLoader {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
-        mSemaphore = new Semaphore(0);
     }
 
     public void resume() {
@@ -57,6 +56,7 @@ public class TimeLinePageDataLoader implements DataLoader {
         }
         if(mSemaphore != null) {
             mSemaphore.release();
+            mSemaphore = null;
         }
     }
 

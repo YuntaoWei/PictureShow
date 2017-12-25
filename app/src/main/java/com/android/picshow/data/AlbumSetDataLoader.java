@@ -4,9 +4,9 @@ import android.app.Application;
 import android.net.Uri;
 
 import com.android.picshow.app.PictureShowApplication;
+import com.android.picshow.utils.BucketHelper;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
-import com.android.picshow.utils.PicShowUtils;
 
 import java.util.concurrent.Semaphore;
 
@@ -34,11 +34,11 @@ public class AlbumSetDataLoader implements DataLoader {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
-        mSemaphore = new Semaphore(1);
     }
 
 
     public void resume() {
+        LogPrinter.i(TAG,"resume");
         if(loadTask == null) {
             loadTask = new LoadThread();
         }
@@ -51,6 +51,7 @@ public class AlbumSetDataLoader implements DataLoader {
     }
 
     public void pause() {
+        LogPrinter.i(TAG,"pause");
         if(loadTask != null) {
             loadTask.stopTask();
             loadTask = null;
@@ -100,7 +101,8 @@ public class AlbumSetDataLoader implements DataLoader {
                 mListener.startLoad();
                 Album[] allAlbum = MediaSetUtils.getAllAlbum(mContext);
                 LogPrinter.i(TAG,"LoadThread load complete:"+allAlbum.length);
-                PicShowUtils.sortItem(allAlbum,true);
+                //PicShowUtils.sortItem(allAlbum,true);
+                reSort(allAlbum);
                 mListener.finishLoad(allAlbum);
                 if(mSemaphore != null)
                     mSemaphore.release();
@@ -108,8 +110,91 @@ public class AlbumSetDataLoader implements DataLoader {
 
         }
 
+        private Album[] reSort(Album[] data) {
+            Album tmp;
+            int sortIndex = 0;
+
+            int index = findIndexFromBucket(data, BucketHelper.LOCAL_CAMERA_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has camera album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.PICTURE_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has picture album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.SCREEN_SHOT_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has screen shot album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.TENCENT_WEIXIN_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has wechat album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.TENCENT_QQ_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has qq album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.TENCENT_NEWS_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has tencent news album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.SINA_WEIBO_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has sina weblog album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+
+            index = findIndexFromBucket(data,BucketHelper.NEW_ARTICALS_BUCKET);
+            if(index != -1) {
+                LogPrinter.i("wytt", "has new articals album");
+                tmp = data[index];
+                data[index] = data[sortIndex];
+                data[sortIndex] = tmp;
+                sortIndex ++;
+            }
+            return data;
+        }
+
     }
 
-
-
+    private static final int findIndexFromBucket(Album[] data, int bucket) {
+        for (int i = 0; i < data.length; i++) {
+            if(data[i].bucketID == bucket)
+                return i;
+        }
+        return -1;
+    }
 }
