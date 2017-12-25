@@ -53,13 +53,15 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
     @Override
     public void onResume() {
         super.onResume();
-        albumDataLoader.resume();
+        if(albumDataLoader != null)
+            albumDataLoader.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        albumDataLoader.pause();
+        if(albumDataLoader != null)
+            albumDataLoader.pause();
         GlideApp.get(getApplicationContext()).clearMemory();
     }
 
@@ -118,7 +120,7 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
         });
         setTitle(getIntent().getStringExtra(MediaSetUtils.SET_NAME));
         mAdapter = new TimeLineAdapter(this);
-        //mAdapter.setDecodeSize(decodeBitmapWidth);
+        mAdapter.setDecodeSize(decodeBitmapWidth);
         mAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {

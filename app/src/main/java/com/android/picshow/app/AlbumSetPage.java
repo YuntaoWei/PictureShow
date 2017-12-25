@@ -54,7 +54,6 @@ public class AlbumSetPage extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        LogPrinter.DEBUG_D("AlbumSetPage onresume!");
         /*if(dataLoader != null)
             dataLoader.resume();*/
     }

@@ -37,7 +37,6 @@ public class AlbumDataLoader implements DataLoader {
                 MediaSetUtils.VIDEO_URI,
                 MediaSetUtils.IMAGE_URI
         }, mContext);
-        mSemaphore = new Semaphore(0);
     }
 
 

@@ -54,11 +54,15 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onResume() {
         super.onResume();
+        if(dataLoader != null)
+            dataLoader.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if(dataLoader != null)
+            dataLoader.pause();
         GlideApp.get(getContext()).clearMemory();
     }
 
@@ -81,13 +85,6 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser) {
-            if(dataLoader != null)
-                dataLoader.resume();
-        } else {
-            if(dataLoader != null)
-                dataLoader.pause();
-        }
     }
 
     @Override
