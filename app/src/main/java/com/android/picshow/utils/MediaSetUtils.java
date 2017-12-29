@@ -48,11 +48,12 @@ public class MediaSetUtils {
             MediaStore.Images.Media.DATE_TAKEN,
             MediaStore.Images.Media.DATE_ADDED
     };
-    private static final int INDEX_ID = 0;
-    private static final int INDEX_DISPLAY_NAME = 1;
-    private static final int INDEX_DATA = 2;
-    private static final int INDEX_DATE = 3;
-    private static final int INDEX_DATE_ADD = 4;
+    public static final int INDEX_ID = 0;
+    public static final int INDEX_DISPLAY_NAME = 1;
+    public static final int INDEX_DATA = 2;
+    public static final int INDEX_ITEM_TYPE = 2;
+    public static final int INDEX_DATE = 3;
+    public static final int INDEX_DATE_ADD = 4;
     /** for PhotoItem----end **/
 
     /** for Album----start **/

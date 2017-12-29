@@ -1,4 +1,4 @@
-package com.android.picshow.ui;
+package com.android.picshow.adapter;
 
 import android.app.Activity;
 import android.content.res.Resources;

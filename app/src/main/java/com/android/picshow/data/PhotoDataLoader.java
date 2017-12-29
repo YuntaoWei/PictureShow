@@ -2,6 +2,7 @@ package com.android.picshow.data;
 
 import android.app.Application;
 import android.database.Cursor;
+import android.net.Uri;
 
 import com.android.picshow.app.PictureShowApplication;
 import com.android.picshow.utils.MediaSetUtils;
@@ -22,6 +23,7 @@ public class PhotoDataLoader implements DataLoader {
     private int bucketID;
     private PhotoLoadListener loadCallBack;
     private PictureShowApplication mApp;
+    private ChangeNotify notifier;
 
     public interface PhotoLoadListener {
 
@@ -34,6 +36,10 @@ public class PhotoDataLoader implements DataLoader {
         bucketID = bucket;
         semaphore = new Semaphore(1);
         loadCallBack = listener;
+        notifier = new ChangeNotify(this, new Uri[] {
+                MediaSetUtils.VIDEO_URI,
+                MediaSetUtils.IMAGE_URI
+        }, (PictureShowApplication)app);
     }
 
     public void resume() {
@@ -86,6 +92,9 @@ public class PhotoDataLoader implements DataLoader {
                 }
                 if(stop)
                     return;
+
+                if(!notifier.isDirty())
+                    continue;
 
                 Cursor c = MediaSetUtils.queryAllItemByBucketID(mApp.getContentResolver(), bucketID);
                 loadCallBack.loadFinish(c);

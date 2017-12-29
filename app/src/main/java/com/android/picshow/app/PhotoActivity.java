@@ -2,9 +2,11 @@ package com.android.picshow.app;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -97,6 +99,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
             enterFullScreen();
 
         }
+        toggleBottomView();
     }
 
     private void toggleBottomView() {
@@ -141,7 +144,6 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                bottomView.setVisibility(View.GONE);
             }
 
             @Override
@@ -151,7 +153,6 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
 
         });
@@ -224,20 +225,27 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
 
         if(photoPageAdapter == null) return;
 
-        Object item = photoPageAdapter.getDataItem(currentID);
-        LogPrinter.i("wyt","onClick:" + currentID + "    " + item);
+        Cursor c = (Cursor)photoPageAdapter.getDataItem(currentID);
+        String type = c.getString(MediaSetUtils.INDEX_ITEM_TYPE);
+        int rowID = c.getInt(MediaSetUtils.INDEX_ID);
+        boolean image = PicShowUtils.isImage(type);
+        Uri baseUri = image ? MediaStore.Images.Media.EXTERNAL_CONTENT_URI :
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
+        Uri u = baseUri.buildUpon().appendPath(String.valueOf(rowID)).build();
 
         switch (v.getId()) {
             case R.id.share:
-
+                PicShowUtils.shareItem(getApplicationContext(), u, image);
                 break;
 
             case R.id.edit:
-
+                PicShowUtils.editItem(getApplicationContext(), u, image);
                 break;
 
             case R.id.delete:
-
+                String itemPath = c.getString(MediaSetUtils.INDEX_DATA);
+                PicShowUtils.deleteItem(getApplicationContext(), u, image, itemPath);
                 break;
 
             case R.id.more:

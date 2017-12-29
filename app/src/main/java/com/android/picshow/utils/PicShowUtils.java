@@ -3,6 +3,8 @@ package com.android.picshow.utils;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +14,7 @@ import android.view.WindowManager;
 import com.android.picshow.R;
 import com.android.picshow.data.Album;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -155,6 +158,38 @@ public class PicShowUtils {
             k++;
         }
         System.arraycopy(tmp, 0, a, s, tmp.length);
+    }
+
+    public static void shareItem(Context ctx, Uri uri, boolean image) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType(image ? "image/jpeg" : "video/*");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.share)));
+    }
+
+    public static void editItem(Context ctx, Uri uri, boolean image) {
+        LogPrinter.i("wyt","editItem : " + uri);
+        Intent intent = new Intent(Intent.ACTION_EDIT);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.setDataAndType(uri, image ? "image/jpeg" : "video/*");
+        ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.edit)));
+    }
+
+    public static boolean deleteItem(Context ctx, Uri uri, boolean image, String path) {
+        int row = ctx.getContentResolver().delete(uri, null, null);
+        if(row > 0) {
+            File f = new File(path);
+            if(f.exists())
+                return f.delete();
+        }
+        return false;
+    }
+
+    public static boolean isImage(String type) {
+        int a = type == null ? MediaSetUtils.TYPE_IMAGE :
+                (type.startsWith("video") ? MediaSetUtils.TYPE_VIDEO : MediaSetUtils.TYPE_IMAGE);
+        return a == MediaSetUtils.TYPE_IMAGE;
     }
 
 

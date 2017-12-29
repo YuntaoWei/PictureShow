@@ -17,7 +17,7 @@ import com.android.picshow.data.AlbumDataLoader;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.LoadListener;
 import com.android.picshow.data.PhotoItem;
-import com.android.picshow.ui.TimeLineAdapter;
+import com.android.picshow.adapter.TimeLineAdapter;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
