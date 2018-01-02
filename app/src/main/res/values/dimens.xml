@@ -24,4 +24,9 @@
 
     <dimen name="timeline_title_height">34dp</dimen>
     <dimen name="timeline_title_margin">17dp</dimen>
+
+    <dimen name="contactListItemView_adjust_height">5dp</dimen>
+    <dimen name="popup_min_line_item_height">54dp</dimen>
+    <dimen name="popup_min_title_height">65dp</dimen>
+    <dimen name="popup_margin_start">12dp</dimen>
 </resources>
