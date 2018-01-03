@@ -8,4 +8,11 @@
     <string name="edit">编辑</string>
     <string name="delete">删除</string>
     <string name="more">更多</string>
+
+    <string name="rename">重命名</string>
+    <string name="set_as">设置为</string>
+    <string name="detail">详细信息</string>
+
+    <string name="confirm">确定</string>
+    <string name="cancle">取消</string>
 </resources>

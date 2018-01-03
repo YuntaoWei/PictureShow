@@ -2,10 +2,14 @@ package com.android.picshow.utils;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -15,7 +19,9 @@ import com.android.picshow.R;
 import com.android.picshow.data.Album;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -176,9 +182,17 @@ public class PicShowUtils {
         ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.edit)));
     }
 
-    public static boolean deleteItem(Context ctx, Uri uri, boolean image, String path) {
+    public static boolean deleteItem(Context ctx, Uri uri, boolean image) {
+        Cursor c = ctx.getContentResolver().query(uri,
+                new String[]{}, null, null, null);
+        String path = null;
+        if(c != null) {
+            while(c.moveToNext()) {
+                path = c.getString(0);
+            }
+        }
         int row = ctx.getContentResolver().delete(uri, null, null);
-        if(row > 0) {
+        if(row > 0 && path != null) {
             File f = new File(path);
             if(f.exists())
                 return f.delete();
@@ -186,10 +200,111 @@ public class PicShowUtils {
         return false;
     }
 
+    public static boolean renameItem(Context ctx, Uri uri, boolean image, String newName) {
+        Cursor c = ctx.getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA},
+                null, null,null);
+        String absPath = null;
+        String newFilePath = null;
+        if(c != null && c.moveToNext())
+            absPath = c.getString(0);
+
+        boolean result = false;
+        if(absPath != null) {
+            File f = new File(absPath);
+            if(f.exists()) {
+                int index = absPath.lastIndexOf(".");
+                String reg = absPath.substring(index);
+                String newFileName = newName + reg;
+                File p = f.getParentFile();
+                File newFile = new File(p, newFileName);
+                newFilePath = newFile.getAbsolutePath();
+                result = f.renameTo(newFile);
+            }
+        }
+        if(result) {
+            ContentValues cv = new ContentValues();
+            cv.put(MediaStore.Files.FileColumns.TITLE, newName);
+            cv.put(MediaStore.Files.FileColumns.DATA, newFilePath == null ? "" : newFilePath);
+            result = ctx.getContentResolver().update(uri, cv, null, null) > 0;
+        }
+
+        return result;
+    }
+
     public static boolean isImage(String type) {
         int a = type == null ? MediaSetUtils.TYPE_IMAGE :
                 (type.startsWith("video") ? MediaSetUtils.TYPE_VIDEO : MediaSetUtils.TYPE_IMAGE);
         return a == MediaSetUtils.TYPE_IMAGE;
+    }
+
+    public static HashMap<String,String> getExifInfo(String path) {
+        HashMap<String, String> infos = new HashMap();
+        try {
+            ExifInterface ef = new ExifInterface(path);
+            String time = ef.getAttribute(ExifInterface.TAG_DATETIME);
+            if(time != null) {
+                infos.put(ExifInterface.TAG_DATETIME, time);
+            }
+
+            String width = ef.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+            if(width != null) {
+                infos.put(ExifInterface.TAG_IMAGE_WIDTH, width);
+            }
+
+            String height = ef.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+            if(height != null) {
+                infos.put(ExifInterface.TAG_IMAGE_LENGTH, time);
+            }
+
+            String orientation = ef.getAttribute(ExifInterface.TAG_ORIENTATION);
+            if(orientation != null) {
+                infos.put(ExifInterface.TAG_ORIENTATION, orientation);
+            }
+
+            String author = ef.getAttribute(ExifInterface.TAG_MAKE);
+            if(author != null) {
+                infos.put(ExifInterface.TAG_MAKE, author);
+            }
+
+            String model = ef.getAttribute(ExifInterface.TAG_MODEL);
+            if(model != null) {
+                infos.put(ExifInterface.TAG_MODEL, model);
+            }
+
+            String flash = ef.getAttribute(ExifInterface.TAG_FLASH);
+            if(flash != null) {
+                infos.put(ExifInterface.TAG_FLASH, flash);
+            }
+
+            String focalLength = ef.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+            if(focalLength != null) {
+                infos.put(ExifInterface.TAG_FOCAL_LENGTH, focalLength);
+            }
+
+            String whiteBalance = ef.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
+            if(whiteBalance != null) {
+                infos.put(ExifInterface.TAG_WHITE_BALANCE, whiteBalance);
+            }
+
+            String aperture = ef.getAttribute(ExifInterface.TAG_APERTURE_VALUE);
+            if(aperture != null) {
+                infos.put(ExifInterface.TAG_APERTURE_VALUE, aperture);
+            }
+
+            String exposure = ef.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
+            if(exposure != null) {
+                infos.put(ExifInterface.TAG_EXPOSURE_TIME, exposure);
+            }
+
+            String iso = ef.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+            if(iso != null) {
+                infos.put(ExifInterface.TAG_ISO_SPEED_RATINGS, iso);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return infos;
     }
 
 

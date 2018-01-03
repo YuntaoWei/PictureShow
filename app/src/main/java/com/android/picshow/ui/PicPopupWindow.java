@@ -42,7 +42,7 @@ public class PicPopupWindow {
 		public void doAnimation(boolean in);
 	}
 
-	public interface GalleryPopupWindowListener {
+	public interface PicPopupWindowListener {
 
 		public void onClick(View v);
 
@@ -148,7 +148,7 @@ public class PicPopupWindow {
 				}
 			}
 		});
-		mPopupWindow.setAnimationStyle(R.style.tanyu_popup_window_animation);
+		mPopupWindow.setAnimationStyle(R.style.popup_window_animation);
 	}
 
 	/*
@@ -187,7 +187,7 @@ public class PicPopupWindow {
 	 * add popup window item
 	 */
 	public void addPopupWindowItem(String title, String tag,
-			final GalleryPopupWindowListener listener) {
+			final PicPopupWindowListener listener) {
 		View item = mInflater.inflate(R.layout.item_popup_window, null);
 		View icon = item.findViewById(R.id.item_popup_window_icon);
 		TextView itemText = (TextView) item
@@ -202,6 +202,7 @@ public class PicPopupWindow {
 				mPopupWindow.dismiss();
 			}
 		});
+        item.setTag(title);
 		ItemViewHolder holder = new ItemViewHolder(item, icon, itemText);
 		mViewMap.put(tag, holder);
 		mPopupItemContent.addView(item);

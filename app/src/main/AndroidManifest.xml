@@ -26,7 +26,9 @@
 
         <activity android:name=".app.AlbumPage"></activity>
 
-        <activity android:name=".app.PhotoActivity"></activity>
+        <activity android:name=".app.PhotoActivity"
+            android:theme="@style/PhotoPageActivity"
+            ></activity>
     </application>
 
 </manifest>

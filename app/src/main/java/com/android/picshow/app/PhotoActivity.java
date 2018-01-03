@@ -1,6 +1,7 @@
 package com.android.picshow.app;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.PhotoDataLoader;
+import com.android.picshow.ui.MenuExecutor;
+import com.android.picshow.ui.PicPopupWindow;
 import com.android.picshow.utils.ApiHelper;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
@@ -50,6 +53,8 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private View rootView;
     private View bottomView;
     private Button btnShare,btnEdit,btnDelete,btnMore;
+    private String[] moreMenu;
+    private MenuExecutor menuExecutor;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,6 +95,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
             }
 
         };
+        menuExecutor = new MenuExecutor(this);
     }
 
     public void toggleFullScreen() {
@@ -236,22 +242,74 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
 
         switch (v.getId()) {
             case R.id.share:
-                PicShowUtils.shareItem(getApplicationContext(), u, image);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, u, image);
                 break;
 
             case R.id.edit:
-                PicShowUtils.editItem(getApplicationContext(), u, image);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, u, image);
                 break;
 
             case R.id.delete:
-                String itemPath = c.getString(MediaSetUtils.INDEX_DATA);
-                PicShowUtils.deleteItem(getApplicationContext(), u, image, itemPath);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE, u, image);
                 break;
 
             case R.id.more:
-
+                showMoreMenu();
                 break;
         }
 
     }
+
+    private void showMoreMenu() {
+        if(moreMenu == null) {
+            moreMenu = getResources().getStringArray(R.array.more_menu);
+        }
+
+        PicPopupWindow moreMenuWindow = PicPopupWindow.getTanyuPopupWindow(this);
+        PicPopupWindow.PicPopupWindowListener itemClickListener = new PicPopupWindow.PicPopupWindowListener() {
+
+            @Override
+            public void onClick(View v) {
+                String itemName = (String)v.getTag();
+                if(itemName == null)
+                    return;
+
+                if(photoPageAdapter == null) return;
+                Cursor c = (Cursor)photoPageAdapter.getDataItem(currentID);
+                String type = c.getString(MediaSetUtils.INDEX_ITEM_TYPE);
+                int rowID = c.getInt(MediaSetUtils.INDEX_ID);
+                boolean image = PicShowUtils.isImage(type);
+                Uri baseUri = image ? MediaStore.Images.Media.EXTERNAL_CONTENT_URI :
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
+                Uri u = baseUri.buildUpon().appendPath(String.valueOf(rowID)).build();
+
+                Resources res = getResources();
+                if(itemName.equals(res.getString(R.string.rename))) {
+                    //rename
+                    menuExecutor.execute(MenuExecutor.MENU_ACTION_RENAME, u, image);
+                } else if(itemName.equals(res.getString(R.string.set_as))) {
+                    //set as
+                    Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                    intent.setDataAndType(u, type);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(
+                            intent, getString(R.string.set_as)));
+                } else if(itemName.equals(res.getString(R.string.detail))) {
+                    //detail
+                    PicShowUtils.getExifInfo(c.getString(1));
+                }
+            }
+
+        };
+        for (String item: moreMenu
+             ) {
+            moreMenuWindow.addPopupWindowItem(item, item, itemClickListener);
+        }
+
+        moreMenuWindow.setPopupWindowTitle(R.string.more);
+        moreMenuWindow.show(bottomView);
+
+    }
+
 }

@@ -13,11 +13,17 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_launcher_background</item>
     </style>
 
-    <style name="PhotoPageActivity" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="PhotoPageActivity" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@android:color/holo_blue_light</item>
+    </style>
 
-    <style name="tanyu_popup_window_animation" parent="android:Animation">
+    <style name="popup_window_animation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/anim_popup_window_in</item>
         <item name="android:windowExitAnimation">@anim/anim_popup_window_out</item>
+    </style>
+
+    <style name="ConfirmDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+
     </style>
 
 </resources>

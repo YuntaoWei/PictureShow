@@ -9,6 +9,7 @@
     <dimen name="photopage_tool_bar">74dp</dimen>
     <dimen name="bottom_menu_elevation">2dp</dimen>
     <dimen name="bottom_menu_margin">51dp</dimen>
+    <integer name="edittext_max_char_length">50</integer>
 
     <integer name="col_num">4</integer>
     <dimen name="col_spaceing">5dp</dimen>

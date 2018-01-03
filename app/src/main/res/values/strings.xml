@@ -8,4 +8,11 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="more">More</string>
+
+    <string name="rename">Rename</string>
+    <string name="set_as">Set as</string>
+    <string name="detail">Detail</string>
+
+    <string name="confirm">Confirm</string>
+    <string name="cancle">Cancel</string>
 </resources>
