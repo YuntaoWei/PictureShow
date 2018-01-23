@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -10,10 +11,16 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
@@ -26,6 +33,8 @@ import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
 import com.github.chrisbanes.photoview.PhotoView;
+
+import java.util.List;
 
 /**
  * Created by yuntao.wei on 2017/12/9.
@@ -55,6 +64,8 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private Button btnShare,btnEdit,btnDelete,btnMore;
     private String[] moreMenu;
     private MenuExecutor menuExecutor;
+    private AlertDialog detailDialog;
+    private LayoutInflater inflater;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -297,7 +308,10 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                             intent, getString(R.string.set_as)));
                 } else if(itemName.equals(res.getString(R.string.detail))) {
                     //detail
-                    PicShowUtils.getExifInfo(c.getString(1));
+                    String path = c.getString(1);
+                    List<String> detail = PicShowUtils.getExifInfo(path);
+                    detail.add("Path:" + path);
+                    showDetailDialog(detail);
                 }
             }
 
@@ -310,6 +324,64 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
         moreMenuWindow.setPopupWindowTitle(R.string.more);
         moreMenuWindow.show(bottomView);
 
+    }
+
+    private void checkInflater() {
+        if(inflater == null)
+            inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    private void showDetailDialog(final List<String> details) {
+        //detailDialog
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        checkInflater();
+        View dialogView = inflater.inflate(R.layout.detail_layout, null);
+        ListView list = dialogView.findViewById(R.id.detail_list);
+        list.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return details.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return null;
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return 0;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewHolder vh = null;
+                String[] info = details.get(position).split("/");
+                if(convertView != null) {
+                    vh = (ViewHolder)convertView.getTag();
+                    vh.tvItemName.setText(info[0]);
+                    vh.tvDetail.setText(info[1]);
+                } else {
+                    vh = new ViewHolder();
+                    convertView = inflater.inflate(R.layout.detail_item, null);
+                    vh.tvDetail = convertView.findViewById(R.id.detail);
+                    vh.tvItemName = convertView.findViewById(R.id.item_name);
+                    convertView.setTag(vh);
+                    vh.tvItemName.setText(info[0]);
+                    vh.tvDetail.setText(info[1]);
+                }
+                return convertView;
+            }
+
+            class ViewHolder {
+                public TextView tvDetail;
+                public TextView tvItemName;
+            }
+
+        });
+        mBuilder.setView(dialogView);
+        mBuilder.show();
     }
 
 }

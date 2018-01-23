@@ -176,8 +176,7 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        bottomView.setVisibility(View.VISIBLE);
-
+        //bottomView.setVisibility(View.VISIBLE);
         return true;
     }
 }

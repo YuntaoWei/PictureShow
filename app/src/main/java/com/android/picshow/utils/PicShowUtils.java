@@ -21,7 +21,7 @@ import com.android.picshow.data.Album;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -237,69 +237,82 @@ public class PicShowUtils {
         return a == MediaSetUtils.TYPE_IMAGE;
     }
 
-    public static HashMap<String,String> getExifInfo(String path) {
-        HashMap<String, String> infos = new HashMap();
+    public static List<String> getExifInfo(String path) {
+        List<String> infos = new ArrayList<>();
+        String detail = null;
         try {
             ExifInterface ef = new ExifInterface(path);
-            String time = ef.getAttribute(ExifInterface.TAG_DATETIME);
-            if(time != null) {
-                infos.put(ExifInterface.TAG_DATETIME, time);
+            detail = ef.getAttribute(ExifInterface.TAG_DATETIME);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_DATETIME + ":/" + detail);
             }
+            detail = null;
 
-            String width = ef.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
-            if(width != null) {
-                infos.put(ExifInterface.TAG_IMAGE_WIDTH, width);
+            detail = ef.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_IMAGE_WIDTH + ":/" + detail);
             }
+            detail = null;
 
-            String height = ef.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
-            if(height != null) {
-                infos.put(ExifInterface.TAG_IMAGE_LENGTH, time);
+            detail = ef.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_IMAGE_LENGTH + ":/" + detail);
             }
+            detail = null;
 
-            String orientation = ef.getAttribute(ExifInterface.TAG_ORIENTATION);
-            if(orientation != null) {
-                infos.put(ExifInterface.TAG_ORIENTATION, orientation);
+            detail = ef.getAttribute(ExifInterface.TAG_ORIENTATION);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_ORIENTATION + ":/" + detail);
             }
+            detail = null;
 
-            String author = ef.getAttribute(ExifInterface.TAG_MAKE);
-            if(author != null) {
-                infos.put(ExifInterface.TAG_MAKE, author);
+            detail = ef.getAttribute(ExifInterface.TAG_MAKE);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_MAKE + ":/" + detail);
             }
+            detail = null;
 
-            String model = ef.getAttribute(ExifInterface.TAG_MODEL);
-            if(model != null) {
-                infos.put(ExifInterface.TAG_MODEL, model);
+            detail = ef.getAttribute(ExifInterface.TAG_MODEL);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_MODEL + ":/" + detail);
             }
+            detail = null;
 
-            String flash = ef.getAttribute(ExifInterface.TAG_FLASH);
-            if(flash != null) {
-                infos.put(ExifInterface.TAG_FLASH, flash);
+            detail = ef.getAttribute(ExifInterface.TAG_FLASH);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_FLASH + ":/" + detail);
             }
+            detail = null;
 
-            String focalLength = ef.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
-            if(focalLength != null) {
-                infos.put(ExifInterface.TAG_FOCAL_LENGTH, focalLength);
+            detail = ef.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_FOCAL_LENGTH + ":/" + detail);
             }
+            detail = null;
 
-            String whiteBalance = ef.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
-            if(whiteBalance != null) {
-                infos.put(ExifInterface.TAG_WHITE_BALANCE, whiteBalance);
+            detail = ef.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_WHITE_BALANCE + ":/" + detail);
             }
+            detail = null;
 
-            String aperture = ef.getAttribute(ExifInterface.TAG_APERTURE_VALUE);
-            if(aperture != null) {
-                infos.put(ExifInterface.TAG_APERTURE_VALUE, aperture);
+            detail = ef.getAttribute(ExifInterface.TAG_APERTURE_VALUE);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_APERTURE_VALUE + ":/" + detail);
             }
+            detail = null;
 
-            String exposure = ef.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
-            if(exposure != null) {
-                infos.put(ExifInterface.TAG_EXPOSURE_TIME, exposure);
+            detail = ef.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_EXPOSURE_TIME + ":/" + detail);
             }
+            detail = null;
 
-            String iso = ef.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
-            if(iso != null) {
-                infos.put(ExifInterface.TAG_ISO_SPEED_RATINGS, iso);
+            detail = ef.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+            if(detail != null) {
+                infos.add(ExifInterface.TAG_ISO_SPEED_RATINGS + ":/" + detail);
             }
+            detail = null;
 
         } catch (IOException e) {
             e.printStackTrace();
