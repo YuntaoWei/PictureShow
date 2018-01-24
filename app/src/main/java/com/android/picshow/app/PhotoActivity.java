@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -17,8 +18,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -310,7 +314,9 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                     //detail
                     String path = c.getString(1);
                     List<String> detail = PicShowUtils.getExifInfo(path);
-                    detail.add("Path:" + path);
+                    String title = c.getString(3);
+                    detail.add(0, "Title : /" + title);
+                    detail.add("Path : /" + path);
                     showDetailDialog(detail);
                 }
             }
@@ -333,8 +339,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
 
     private void showDetailDialog(final List<String> details) {
         //detailDialog
-
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this, R.style.draw_dialog);
         checkInflater();
         View dialogView = inflater.inflate(R.layout.detail_layout, null);
         ListView list = dialogView.findViewById(R.id.detail_list);
@@ -357,7 +362,17 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder vh = null;
-                String[] info = details.get(position).split("/");
+                String[] info = null;
+                if(position == getCount() - 1) {
+                    String o = details.get(position);
+                    int index = o.indexOf('/');
+                    info = new String[2];
+                    info[0] = o.substring(0, index);
+                    info[1] = o.substring(index + 1);
+                } else {
+                    info = details.get(position).split("/");
+                }
+
                 if(convertView != null) {
                     vh = (ViewHolder)convertView.getTag();
                     vh.tvItemName.setText(info[0]);
@@ -378,10 +393,17 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                 public TextView tvDetail;
                 public TextView tvItemName;
             }
-
         });
         mBuilder.setView(dialogView);
-        mBuilder.show();
+        setDialogSize(mBuilder.show());
+    }
+
+    private void setDialogSize(Dialog dialog) {
+        Window dialogWindow = dialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = 900;
+        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        dialogWindow.setAttributes(lp);
     }
 
 }

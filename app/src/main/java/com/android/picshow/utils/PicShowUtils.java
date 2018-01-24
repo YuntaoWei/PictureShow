@@ -244,73 +244,73 @@ public class PicShowUtils {
             ExifInterface ef = new ExifInterface(path);
             detail = ef.getAttribute(ExifInterface.TAG_DATETIME);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_DATETIME + ":/" + detail);
+                infos.add(ExifInterface.TAG_DATETIME + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_IMAGE_WIDTH + ":/" + detail);
+                infos.add(ExifInterface.TAG_IMAGE_WIDTH + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_IMAGE_LENGTH + ":/" + detail);
+                infos.add(ExifInterface.TAG_IMAGE_LENGTH + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_ORIENTATION);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_ORIENTATION + ":/" + detail);
+                infos.add(ExifInterface.TAG_ORIENTATION + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_MAKE);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_MAKE + ":/" + detail);
+                infos.add(ExifInterface.TAG_MAKE + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_MODEL);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_MODEL + ":/" + detail);
+                infos.add(ExifInterface.TAG_MODEL + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_FLASH);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_FLASH + ":/" + detail);
+                infos.add(ExifInterface.TAG_FLASH + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_FOCAL_LENGTH + ":/" + detail);
+                infos.add(ExifInterface.TAG_FOCAL_LENGTH + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_WHITE_BALANCE + ":/" + detail);
+                infos.add(ExifInterface.TAG_WHITE_BALANCE + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_APERTURE_VALUE);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_APERTURE_VALUE + ":/" + detail);
+                infos.add(ExifInterface.TAG_APERTURE_VALUE + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_EXPOSURE_TIME + ":/" + detail);
+                infos.add(ExifInterface.TAG_EXPOSURE_TIME + " : /" + detail);
             }
             detail = null;
 
             detail = ef.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
             if(detail != null) {
-                infos.add(ExifInterface.TAG_ISO_SPEED_RATINGS + ":/" + detail);
+                infos.add(ExifInterface.TAG_ISO_SPEED_RATINGS + " : /" + detail);
             }
             detail = null;
 
