@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.android.picshow.R;
 import com.android.picshow.data.GlideApp;
+import com.android.picshow.data.PhotoItem;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.bumptech.glide.load.DecodeFormat;
@@ -53,8 +54,8 @@ public class PhotoViewFragment extends Fragment {
         b.putString(MediaSetUtils.PHOTO_PATH, path);
 
         String type = c.getString(2);
-        b.putInt(TYPE, type == null ? MediaSetUtils.TYPE_IMAGE :
-                (type.startsWith("video") ? MediaSetUtils.TYPE_VIDEO : MediaSetUtils.TYPE_IMAGE));
+        b.putInt(TYPE, type == null ? PhotoItem.TYPE_IMAGE :
+                (type.startsWith("video") ? PhotoItem.TYPE_VIDEO : PhotoItem.TYPE_IMAGE));
 
         b.putInt(CURRENT_POSITION, position);
         f.setArguments(b);
@@ -81,7 +82,7 @@ public class PhotoViewFragment extends Fragment {
                 .load(currentPath)
                 .format(DecodeFormat.PREFER_ARGB_8888)
                 .into(mPhotoView);
-        if(type == MediaSetUtils.TYPE_VIDEO)
+        if(type == PhotoItem.TYPE_VIDEO)
             videoIcon.setVisibility(View.VISIBLE);
         else
             videoIcon.setVisibility(View.GONE);

@@ -2,6 +2,7 @@ package com.android.picshow.utils;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,14 +10,24 @@ import android.database.Cursor;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.picshow.R;
 import com.android.picshow.data.Album;
+import com.android.picshow.data.PhotoItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -166,6 +177,16 @@ public class PicShowUtils {
         System.arraycopy(tmp, 0, a, s, tmp.length);
     }
 
+    public static void shareItems(Context ctx, ArrayList<Uri> uri, boolean image) {
+        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Bundle b = new Bundle();
+        b.putParcelableArrayList(Intent.EXTRA_STREAM, uri);
+        intent.putExtras(b);
+        ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.share)));
+
+    }
+
     public static void shareItem(Context ctx, Uri uri, boolean image) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -231,10 +252,79 @@ public class PicShowUtils {
         return result;
     }
 
+    public static void setDialogSize(Dialog dialog) {
+        Window dialogWindow = dialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.width = 900;
+        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        dialogWindow.setAttributes(lp);
+    }
+
+    public static void showDetailDialog(Context ctx, final List<String> details) {
+        //detailDialog
+        final LayoutInflater inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ctx, R.style.draw_dialog);
+        View dialogView = inflater.inflate(R.layout.detail_layout, null);
+        ListView list = dialogView.findViewById(R.id.detail_list);
+        list.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return details.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return null;
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return 0;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewHolder vh = null;
+                String[] info = null;
+                if(position == getCount() - 1) {
+                    String o = details.get(position);
+                    int index = o.indexOf('/');
+                    info = new String[2];
+                    info[0] = o.substring(0, index);
+                    info[1] = o.substring(index + 1);
+                } else {
+                    info = details.get(position).split("/");
+                }
+
+                if(convertView != null) {
+                    vh = (ViewHolder)convertView.getTag();
+                    vh.tvItemName.setText(info[0]);
+                    vh.tvDetail.setText(info[1]);
+                } else {
+                    vh = new ViewHolder();
+                    convertView = inflater.inflate(R.layout.detail_item, null);
+                    vh.tvDetail = convertView.findViewById(R.id.detail);
+                    vh.tvItemName = convertView.findViewById(R.id.item_name);
+                    convertView.setTag(vh);
+                    vh.tvItemName.setText(info[0]);
+                    vh.tvDetail.setText(info[1]);
+                }
+                return convertView;
+            }
+
+            class ViewHolder {
+                public TextView tvDetail;
+                public TextView tvItemName;
+            }
+        });
+        mBuilder.setView(dialogView);
+        setDialogSize(mBuilder.show());
+    }
+
     public static boolean isImage(String type) {
-        int a = type == null ? MediaSetUtils.TYPE_IMAGE :
-                (type.startsWith("video") ? MediaSetUtils.TYPE_VIDEO : MediaSetUtils.TYPE_IMAGE);
-        return a == MediaSetUtils.TYPE_IMAGE;
+        int a = type == null ? PhotoItem.TYPE_IMAGE :
+                (type.startsWith("video") ? PhotoItem.TYPE_VIDEO : PhotoItem.TYPE_IMAGE);
+        return a == PhotoItem.TYPE_IMAGE;
     }
 
     public static List<String> getExifInfo(String path) {

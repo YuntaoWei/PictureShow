@@ -1,6 +1,5 @@
 package com.android.picshow.app;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -17,14 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.PhotoPageAdapter;
@@ -38,6 +30,7 @@ import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -254,18 +247,20 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
         Uri u = baseUri.buildUpon().appendPath(String.valueOf(rowID)).build();
+        ArrayList<Uri> list = new ArrayList<>();
+        list.add(u);
 
         switch (v.getId()) {
             case R.id.share:
-                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, u, image);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, list, image, null);
                 break;
 
             case R.id.edit:
-                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, u, image);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, list, image, null);
                 break;
 
             case R.id.delete:
-                menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE, u, image);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE, list, image, null);
                 break;
 
             case R.id.more:
@@ -298,11 +293,13 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                         MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
                 Uri u = baseUri.buildUpon().appendPath(String.valueOf(rowID)).build();
+                ArrayList<Uri> uris = new ArrayList<>();
+                uris.add(u);
 
                 Resources res = getResources();
                 if(itemName.equals(res.getString(R.string.rename))) {
                     //rename
-                    menuExecutor.execute(MenuExecutor.MENU_ACTION_RENAME, u, image);
+                    menuExecutor.execute(MenuExecutor.MENU_ACTION_RENAME, uris, image, null);
                 } else if(itemName.equals(res.getString(R.string.set_as))) {
                     //set as
                     Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
@@ -317,7 +314,8 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                     String title = c.getString(3);
                     detail.add(0, "Title : /" + title);
                     detail.add("Path : /" + path);
-                    showDetailDialog(detail);
+                    checkInflater();
+                    PicShowUtils.showDetailDialog(PhotoActivity.this, detail);
                 }
             }
 
@@ -335,75 +333,6 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
     private void checkInflater() {
         if(inflater == null)
             inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-    private void showDetailDialog(final List<String> details) {
-        //detailDialog
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this, R.style.draw_dialog);
-        checkInflater();
-        View dialogView = inflater.inflate(R.layout.detail_layout, null);
-        ListView list = dialogView.findViewById(R.id.detail_list);
-        list.setAdapter(new BaseAdapter() {
-            @Override
-            public int getCount() {
-                return details.size();
-            }
-
-            @Override
-            public Object getItem(int position) {
-                return null;
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return 0;
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                ViewHolder vh = null;
-                String[] info = null;
-                if(position == getCount() - 1) {
-                    String o = details.get(position);
-                    int index = o.indexOf('/');
-                    info = new String[2];
-                    info[0] = o.substring(0, index);
-                    info[1] = o.substring(index + 1);
-                } else {
-                    info = details.get(position).split("/");
-                }
-
-                if(convertView != null) {
-                    vh = (ViewHolder)convertView.getTag();
-                    vh.tvItemName.setText(info[0]);
-                    vh.tvDetail.setText(info[1]);
-                } else {
-                    vh = new ViewHolder();
-                    convertView = inflater.inflate(R.layout.detail_item, null);
-                    vh.tvDetail = convertView.findViewById(R.id.detail);
-                    vh.tvItemName = convertView.findViewById(R.id.item_name);
-                    convertView.setTag(vh);
-                    vh.tvItemName.setText(info[0]);
-                    vh.tvDetail.setText(info[1]);
-                }
-                return convertView;
-            }
-
-            class ViewHolder {
-                public TextView tvDetail;
-                public TextView tvItemName;
-            }
-        });
-        mBuilder.setView(dialogView);
-        setDialogSize(mBuilder.show());
-    }
-
-    private void setDialogSize(Dialog dialog) {
-        Window dialogWindow = dialog.getWindow();
-        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.width = 900;
-        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        dialogWindow.setAttributes(lp);
     }
 
 }

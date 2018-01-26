@@ -1,11 +1,17 @@
 package com.android.picshow.ui;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.android.picshow.R;
 import com.android.picshow.utils.PicShowUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yuntao.wei on 2017/12/29.
@@ -30,34 +36,113 @@ public class MenuExecutor {
         mContext = ctx;
     }
 
-    public boolean execute(int action, Uri u, boolean image) {
-        switch (action) {
+    private void deleteItemsBySync(List<Uri> u) {
+        
+    }
+
+    private class ExecuteTask extends AsyncTask<Integer, Void, Void> {
+
+        private ExcuteListener l;
+        private ArrayList<Uri> uris;
+        private boolean image;
+
+        public ExecuteTask(ArrayList<Uri> u, ExcuteListener l, boolean image) {
+            uris = u;
+            this.l = l;
+            this.image = image;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            l.startExcute();
+        }
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            switch (integers[0]) {
+                case MENU_ACTION_DELETE :
+                    if(uris.size() == 1) {
+                        PicShowUtils.deleteItem(mContext, uris.get(0), true);
+                    } else {
+                        ContentResolver cr = mContext.getContentResolver();
+                        for (Uri u : uris
+                                ) {
+                            cr.delete(u, null, null);
+                        }
+                    }
+                    break;
+
+                case MENU_ACTION_SHARE :
+                    if(uris.size() == 1) {
+                        PicShowUtils.shareItem(mContext, uris.get(0), true);
+                    } else {
+                        PicShowUtils.shareItems(mContext, uris, true);
+                    }
+                    break;
+
+                case MENU_ACTION_EDIT :
+                    PicShowUtils.editItem(mContext, uris.get(0), image);
+                    break;
+
+                case MENU_ACTION_RENAME :
+                    showConfirmDialog(uris.get(0), image);
+                    break;
+
+                default:
+                    return null;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Log.i("delete","delete success!");
+            l.excuteSuccess();
+        }
+    }
+
+    public interface ExcuteListener {
+
+        void startExcute();
+        void excuteSuccess();
+        void excuteFailed();
+
+    }
+
+    public void execute(int action, ArrayList<Uri> u, boolean image, ExcuteListener l) {
+        ExecuteTask deleteTask = new ExecuteTask(u, l, image);
+        deleteTask.execute(action);
+        /*switch (action) {
             case MENU_ACTION_DELETE :
-                PicShowUtils.deleteItem(mContext, u, image);
-                break;
-            case MENU_ACTION_SETAS :
-
-                break;
-
-            case MENU_ACTION_DETAIL :
+                if(u.size() == 1) {
+                    PicShowUtils.deleteItem(mContext, u.get(0), image);
+                } else {
+                    ExecuteTask deleteTask = new ExecuteTask(u, l);
+                    deleteTask.execute(action);
+                }
                 break;
 
             case MENU_ACTION_SHARE :
-                PicShowUtils.shareItem(mContext, u, image);
+                if(u.size() == 1) {
+                    PicShowUtils.shareItem(mContext, u.get(0), image);
+                } else {
+
+                }
                 break;
 
             case MENU_ACTION_EDIT :
-                PicShowUtils.editItem(mContext, u, image);
+                PicShowUtils.editItem(mContext, u.get(0), image);
                 break;
 
             case MENU_ACTION_RENAME :
-                showConfirmDialog(u, image);
+                showConfirmDialog(u.get(0), image);
                 break;
 
             default:
                 return false;
         }
-        return true;
+        return true;*/
     }
 
     private void showConfirmDialog(final Uri u, final boolean image) {

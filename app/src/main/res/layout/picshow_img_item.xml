@@ -18,4 +18,17 @@
         android:visibility="gone"
         />
 
+    <CheckBox
+        android:id="@+id/select"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:button="@drawable/checkbox_bac"
+        android:visibility="gone"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
+        />
+
 </RelativeLayout>

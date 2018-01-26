@@ -1,5 +1,6 @@
 package com.android.picshow.app;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -11,17 +12,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 
 import com.android.picshow.R;
+import com.android.picshow.adapter.TimeLineAdapter;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.LoadListener;
+import com.android.picshow.data.Path;
 import com.android.picshow.data.PhotoItem;
 import com.android.picshow.data.TimeLinePageDataLoader;
-import com.android.picshow.adapter.TimeLineAdapter;
+import com.android.picshow.ui.MenuExecutor;
+import com.android.picshow.ui.SelectionManager;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
+
+import java.util.List;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -43,6 +50,10 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     private View bottomView;
     private TimeLineAdapter gridAdapter;
     private int decodeBitmapWidth;
+    private SelectionManager selectionManager;
+    private SelectionManager.SelectionListener selectionListener;
+    private Button btnShare, btnDelete, btnEdit, btnDetail;
+    private MenuExecutor menuExecutor;
 
 
     @Override
@@ -139,12 +150,49 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
             }
 
         };
+
+        selectionListener = new SelectionManager.SelectionListener() {
+            @Override
+            public void enterSelectionMode() {
+
+            }
+
+            @Override
+            public void exitSelectionMode() {
+                bottomView.setVisibility(View.GONE);
+                gridAdapter.setSelectState(false);
+            }
+
+            @Override
+            public void onSelectionChange(Path p, boolean select) {
+                if(selectionManager.getSelectCount() > 1) {
+                    if(btnEdit != null) {
+                        btnEdit.setClickable(false);
+                        btnEdit.setAlpha(0.3f);
+                    }
+                    if(btnDetail != null) {
+                        btnDetail.setClickable(false);
+                        btnDetail.setAlpha(0.3f);
+                    }
+                } else {
+                    if (btnEdit != null) {
+                        btnEdit.setClickable(true);
+                        btnEdit.setAlpha(1.0f);
+                    }
+                    if (btnDetail != null) {
+                        btnDetail.setClickable(true);
+                        btnDetail.setAlpha(1.0f);
+                    }
+                }
+            }
+        };
     }
 
     private void initView() {
         gridView = (GridView) rootView.findViewById(R.id.grid);
         bottomView = rootView.findViewById(R.id.bottom_layout);
-        gridAdapter = new TimeLineAdapter(getActivity());
+        selectionManager = new SelectionManager();
+        gridAdapter = new TimeLineAdapter(getActivity(), null, selectionManager);
         gridAdapter.setDecodeSize(decodeBitmapWidth);
         gridView.setAdapter(gridAdapter);
         gridAdapter.registerDataSetObserver(new DataSetObserver() {
@@ -163,20 +211,126 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
         gridView.setOnItemClickListener(this);
         gridView.setOnItemLongClickListener(this);
+
+        selectionManager.setSelectionListener(selectionListener);
+        menuExecutor = new MenuExecutor(getContext());
+        initBottomMenu();
+    }
+
+    private void initBottomMenu() {
+
+        if(bottomView == null) return;
+
+        btnDelete = bottomView.findViewById(R.id.delete);
+        btnDetail = bottomView.findViewById(R.id.more);
+        btnEdit = bottomView.findViewById(R.id.edit);
+        btnShare = bottomView.findViewById(R.id.share);
+        final MenuExecutor.ExcuteListener excuteListener = new MenuExecutor.ExcuteListener() {
+
+            @Override
+            public void startExcute() {
+                //show dialog here.
+                showProgreeDialog();
+            }
+
+            @Override
+            public void excuteSuccess() {
+                //exit select mode and hide dialog.
+                gridAdapter.setSelectState(false);
+                if(dialog != null) {
+                    dialog.dismiss();
+                }
+                selectionManager.clearSelection();
+            }
+
+            @Override
+            public void excuteFailed() {
+                //some error occurs.
+                if(dialog != null)
+                    dialog.dismiss();
+            }
+        };
+
+        View.OnClickListener onclick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+
+                    case R.id.delete:
+                        menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE,
+                                selectionManager.getSelectItems(), true, excuteListener);
+                        break;
+
+                    case R.id.more:
+                        PhotoItem item = gridAdapter.getItem(selectionManager.getSelectPostion());
+                        String path = item.getPath();
+                        List<String> detail = PicShowUtils.getExifInfo(path);
+                        String title = item.getTitle();
+                        detail.add(0, "Title : /" + title);
+                        detail.add("Path : /" + path);
+                        PicShowUtils.showDetailDialog(getActivity(), detail);
+                        break;
+
+                    case R.id.edit:
+                        menuExecutor.execute(MenuExecutor.MENU_ACTION_EDIT,
+                                selectionManager.getSelectItems(), true, excuteListener);
+                        break;
+
+                    case R.id.share:
+                        menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE,
+                                selectionManager.getSelectItems(), true, excuteListener);
+                        break;
+
+
+                }
+            }
+        };
+        btnDelete.setOnClickListener(onclick);
+        btnDetail.setOnClickListener(onclick);
+        btnEdit.setOnClickListener(onclick);
+        btnShare.setOnClickListener(onclick);
+
+    }
+
+    private ProgressDialog dialog;
+    private void showProgreeDialog() {
+        if(dialog == null) {
+            dialog = new ProgressDialog(getActivity());
+            dialog.setCancelable(false);
+        }
+        dialog.show();
+
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getActivity(), PhotoActivity.class);
-        intent.putExtra(MediaSetUtils.PHOTO_ID, position);
-        intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
-        intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
-        startActivity(intent);
+        if(gridAdapter.getSelectState()) {
+            PhotoItem item = gridAdapter.getItem(position);
+            selectionManager.togglePath(position, item.toPath());
+            /*if(selectionManager.togglePath(position, item.toPath())) {
+                item.select = true;
+            } else {
+                item.select = false;
+            }*/
+            gridAdapter.notifyDataSetChanged();
+        } else {
+            Intent intent = new Intent(getActivity(), PhotoActivity.class);
+            intent.putExtra(MediaSetUtils.PHOTO_ID, position);
+            intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
+            intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
+            startActivity(intent);
+        }
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        //bottomView.setVisibility(View.VISIBLE);
+        if(!gridAdapter.getSelectState()) {
+            gridAdapter.setSelectState(true);
+            bottomView.setVisibility(View.VISIBLE);
+        } else {
+            gridAdapter.setSelectState(false);
+            bottomView.setVisibility(View.GONE);
+        }
         return true;
     }
 }

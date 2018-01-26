@@ -32,11 +32,6 @@ public class MediaSetUtils {
     public static final String PHOTO_ID = "_id";
     public static final String PHOTO_PATH = "_path";
 
-    public static final int TYPE_IMAGE = 0X001;
-    public static final int TYPE_VIDEO = 0X002;
-    public static final int TYPE_GIF = 0X010;
-
-
     public static final Uri IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     public static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
@@ -113,7 +108,7 @@ public class MediaSetUtils {
                         c.getString(INDEX_DATA),
                         c.getLong(INDEX_DATE),
                         c.getLong(INDEX_DATE_ADD),
-                        TYPE_IMAGE));
+                        PhotoItem.TYPE_IMAGE));
             }
         } finally {
             c.close();
@@ -142,7 +137,7 @@ public class MediaSetUtils {
                         c.getString(INDEX_DATA),
                         c.getLong(INDEX_DATE),
                         c.getLong(INDEX_DATE_ADD),
-                        TYPE_VIDEO));
+                        PhotoItem.TYPE_VIDEO));
             }
         } finally {
             c.close();

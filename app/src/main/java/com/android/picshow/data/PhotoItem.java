@@ -18,6 +18,10 @@ public class PhotoItem implements Parcelable {
 
     private static final String TAG = "PhotoItem";
 
+    public static final int TYPE_IMAGE = 0X001;
+    public static final int TYPE_VIDEO = 0X002;
+    public static final int TYPE_GIF = 0X010;
+
     private int ID;
     private String mTitle;
     private String mPath;
@@ -84,6 +88,10 @@ public class PhotoItem implements Parcelable {
     public String getDateAdd(String pattern) {
         return new SimpleDateFormat(pattern)
                 .format(new Date(dateAdd*1000L));
+    }
+
+    public Path toPath() {
+        return new Path(ID, itemType);
     }
 
     public int getItemType() {

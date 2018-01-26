@@ -2,16 +2,18 @@ package com.android.picshow.adapter;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.picshow.R;
 import com.android.picshow.data.GlideApp;
 import com.android.picshow.data.PhotoItem;
-import com.android.picshow.utils.MediaSetUtils;
+import com.android.picshow.ui.SelectionManager;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.signature.MediaStoreSignature;
 import com.trustyapp.gridheaders.TrustyGridSimpleAdapter;
@@ -34,16 +36,19 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
     private Resources mRes;
     private int currentHeadCount = 0;
     private String pattern;
+    private boolean selected = false;
+    private SelectionManager selectionManager;
 
     public TimeLineAdapter(Activity a) {
-        this(a, null);
+        this(a, null, null);
     }
 
-    public TimeLineAdapter(Activity a, PhotoItem[] items) {
+    public TimeLineAdapter(Activity a, PhotoItem[] items, SelectionManager s) {
         attachActivity = a;
         pattern = a.getString(R.string.timeline_title_format);
         datas = items == null ? datas : items;
         mRes = a.getResources();
+        selectionManager = s;
     }
 
     public void setData(PhotoItem[] items) {
@@ -60,6 +65,19 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
 
     public void setDecodeSize(int size) {
         thubNailSize = size;
+    }
+
+    public void setSelectState(boolean select) {
+        selected = select;
+        notifyDataSetChanged();
+    }
+
+    public boolean getSelectState() {
+        return selected;
+    }
+
+    public void updateItem(int position, boolean select) {
+
     }
 
     public long getTimeId(String date) {
@@ -117,6 +135,7 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.i("wyt","getView : " + position);
         ViewHolder v = null;
         int type = getItem(position).getItemType();
         if(convertView != null) {
@@ -125,12 +144,14 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
                 v = new ViewHolder();
                 v.imgView = convertView.findViewById(R.id.img);
                 v.videoIcon = convertView.findViewById(R.id.videoIcon);
+                v.selectIcon = convertView.findViewById(R.id.select);
             }
         } else {
             convertView = attachActivity.getLayoutInflater().inflate(R.layout.picshow_img_item,null);
             v = new ViewHolder();
             v.imgView = convertView.findViewById(R.id.img);
             v.videoIcon = convertView.findViewById(R.id.videoIcon);
+            v.selectIcon = convertView.findViewById(R.id.select);
         }
         convertView.setTag(v);
         if(v != null && v.imgView != null) {
@@ -150,26 +171,32 @@ public class TimeLineAdapter extends BaseAdapter implements TrustyGridSimpleAdap
                         .centerCrop()
                         .dontAnimate()
                         .format(DecodeFormat.PREFER_RGB_565)
-                        .signature(new MediaStoreSignature(type == MediaSetUtils.TYPE_VIDEO ? "video/*" : "image/*"
+                        .signature(new MediaStoreSignature(type == PhotoItem.TYPE_VIDEO ? "video/*" : "image/*"
                                 ,getItem(position).getDateToken(), 0))
                         .into(v.imgView);
             }
-            if(type == MediaSetUtils.TYPE_VIDEO)
+            if(type == PhotoItem.TYPE_VIDEO)
                 v.videoIcon.setVisibility(View.VISIBLE);
             else
                 v.videoIcon.setVisibility(View.GONE);
+            if(selected)
+                v.selectIcon.setVisibility(View.VISIBLE);
+            else
+                v.selectIcon.setVisibility(View.GONE);
+            v.selectIcon.setChecked(selectionManager == null ? false : selectionManager.isSelected(position));
         }
         return convertView;
     }
 
-    private class HeaderViewHolder {
+    public class HeaderViewHolder {
         public TextView tvTimeHeader;
         public TextView tvCount;
     }
 
-    private class ViewHolder {
+    public class ViewHolder {
         public ImageView imgView;
         public ImageView videoIcon;
+        public CheckBox selectIcon;
     }
 
 }
