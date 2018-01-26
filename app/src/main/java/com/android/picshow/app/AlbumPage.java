@@ -284,13 +284,7 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(mAdapter.getSelectState()) {
             PhotoItem item = mAdapter.getItem(position);
-            selectionManager.togglePath(position, item.toPath());
-            /*if(selectionManager.togglePath(position, item.toPath())) {
-                item.select = true;
-            } else {
-                item.select = false;
-            }*/
-            mAdapter.notifyDataSetChanged();
+            updateItem(view, selectionManager.togglePath(position, item.toPath()));
         } else {
             PhotoItem item = mAdapter.getItem(position);
             Intent intent = new Intent(this, PhotoActivity.class);
@@ -298,6 +292,13 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
             intent.putExtra(MediaSetUtils.PHOTO_PATH, item.getPath());
             intent.putExtra(MediaSetUtils.BUCKET, bucketID);
             startActivity(intent);
+        }
+    }
+
+    private void updateItem(View v, boolean select) {
+        TimeLineAdapter.ViewHolder vh = (TimeLineAdapter.ViewHolder)v.getTag();
+        if(vh != null) {
+            vh.selectIcon.setChecked(select);
         }
     }
 

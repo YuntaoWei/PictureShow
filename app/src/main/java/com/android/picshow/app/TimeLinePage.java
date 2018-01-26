@@ -306,19 +306,20 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(gridAdapter.getSelectState()) {
             PhotoItem item = gridAdapter.getItem(position);
-            selectionManager.togglePath(position, item.toPath());
-            /*if(selectionManager.togglePath(position, item.toPath())) {
-                item.select = true;
-            } else {
-                item.select = false;
-            }*/
-            gridAdapter.notifyDataSetChanged();
+            updateItem(view, selectionManager.togglePath(position, item.toPath()));
         } else {
             Intent intent = new Intent(getActivity(), PhotoActivity.class);
             intent.putExtra(MediaSetUtils.PHOTO_ID, position);
             intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
             intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
             startActivity(intent);
+        }
+    }
+
+    private void updateItem(View v, boolean select) {
+        TimeLineAdapter.ViewHolder vh = (TimeLineAdapter.ViewHolder)v.getTag();
+        if(vh != null) {
+            vh.selectIcon.setChecked(select);
         }
     }
 
