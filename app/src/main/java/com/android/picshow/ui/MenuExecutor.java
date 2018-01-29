@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.android.picshow.R;
 import com.android.picshow.utils.PicShowUtils;
@@ -54,7 +53,8 @@ public class MenuExecutor {
 
         @Override
         protected void onPreExecute() {
-            l.startExcute();
+            if(l != null)
+                l.startExcute();
         }
 
         @Override
@@ -97,8 +97,8 @@ public class MenuExecutor {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Log.i("delete","delete success!");
-            l.excuteSuccess();
+            if(l != null)
+                l.excuteSuccess();
         }
     }
 
