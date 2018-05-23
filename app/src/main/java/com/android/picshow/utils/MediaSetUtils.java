@@ -291,6 +291,18 @@ public class MediaSetUtils {
         return albums;
     }
 
+    public static String uriToPath(Context ctx, Uri uri) {
+        String path = null;
+        Cursor c = ctx.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA},
+                null, null, null);
+        if(c != null && c.moveToNext()) {
+            path = c.getString(0);
+            c.close();
+            c = null;
+        }
+        return path;
+    }
+
 
 
 }

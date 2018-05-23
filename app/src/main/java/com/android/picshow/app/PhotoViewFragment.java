@@ -133,15 +133,22 @@ public class PhotoViewFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        LogPrinter.i(TAG, "onPause.");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        GlideApp.with(this).onDestroy();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if(mPhotoView != null) {
+            GlideApp.with(this).clear(mPhotoView);
+            mPhotoView = null;
+        }
     }
+
 }

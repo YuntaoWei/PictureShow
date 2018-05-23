@@ -1,12 +1,10 @@
 package com.android.picshow.app;
 
-import android.graphics.Color;
-import android.os.Build;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 
+import com.android.picshow.R;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.PageFactory;
 
@@ -25,40 +23,70 @@ public abstract class BaseActivity extends PermissionActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("");
-        //updateStatusBar();
+        updateStatusBar();
     }
 
     protected void changeButtonSelectedStatus(int index) {
         LogPrinter.i(TAG,"changeButtonSelectedStatus:"+index);
         switch (index) {
             case PageFactory.INDEX_ALBUMSET:
-                if(btn_Album != null)
-                    btn_Album.setAlpha(1.0f);
-                if(btn_Photo != null)
-                    btn_Photo.setAlpha(0.5f);
+                //album button selected,should display high light status.
+                Drawable albumSelectDrawable = getResources().getDrawable(R.drawable.album_n);
+                albumSelectDrawable.setBounds(0, 0,
+                        albumSelectDrawable.getMinimumWidth(), albumSelectDrawable.getMinimumHeight());
+
+                if(btn_Album != null) {
+                    btn_Album.setTextColor(getResources().getColor(R.color.select_text_color));
+                    btn_Album.setCompoundDrawables(null, albumSelectDrawable, null, null);
+                }
+
+                //photo button display default status.
+                Drawable photoDefaultDrawable = getResources().getDrawable(R.drawable.photo_gray_n);
+                photoDefaultDrawable.setBounds(0, 0,
+                        photoDefaultDrawable.getMinimumWidth(), photoDefaultDrawable.getMinimumHeight());
+
+                if(btn_Photo != null) {
+                    btn_Photo.setTextColor(getResources().getColor(R.color.default_text_color));
+                    btn_Photo.setCompoundDrawables(null, photoDefaultDrawable, null, null);
+                }
+                changeTopLayout(true);
                 return;
 
             case PageFactory.INDEX_TIMELINE:
-                if(btn_Album != null)
-                    btn_Album.setAlpha(0.5f);
-                if(btn_Photo != null)
-                    btn_Photo.setAlpha(1.0f);
+                //album button should display default status.
+                Drawable albumDefaultDrawable = getResources().getDrawable(R.drawable.album_gray_n);
+                albumDefaultDrawable.setBounds(0, 0,
+                        albumDefaultDrawable.getMinimumWidth(), albumDefaultDrawable.getMinimumHeight());
+
+                if(btn_Album != null) {
+                    btn_Album.setTextColor(getResources().getColor(R.color.default_text_color));
+                    btn_Album.setCompoundDrawables(null, albumDefaultDrawable, null, null);
+                }
+
+
+                //photo button selected,should display high light status.
+                Drawable photoSelectDrawable = getResources().getDrawable(R.drawable.photo_n);
+                photoSelectDrawable.setBounds(0, 0,
+                        photoSelectDrawable.getMinimumWidth(), photoSelectDrawable.getMinimumHeight());
+
+                if(btn_Photo != null) {
+                    btn_Photo.setTextColor(getResources().getColor(R.color.select_text_color));
+                    btn_Photo.setCompoundDrawables(null, photoSelectDrawable, null, null);
+                }
+                changeTopLayout(false);
                 return;
+
+            default:
+                break;
         }
     }
 
     private void updateStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-        }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
     }
+
+
+    public abstract void changeTopLayout(boolean album);
 
 
 }

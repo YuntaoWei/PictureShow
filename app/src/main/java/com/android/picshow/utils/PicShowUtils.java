@@ -28,6 +28,8 @@ import android.widget.TextView;
 import com.android.picshow.R;
 import com.android.picshow.data.Album;
 import com.android.picshow.data.PhotoItem;
+import com.android.picshow.edit.editor.BaseEditorManager;
+import com.android.picshow.edit.editorui.EditActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +44,7 @@ import java.util.List;
 
 public class PicShowUtils {
 
-    public static final int MAX_LOAD = 5;
+    public static final int MAX_LOAD = 3;
 
 
     public static final String[] PERMISSIONS = {
@@ -196,11 +198,19 @@ public class PicShowUtils {
     }
 
     public static void editItem(Context ctx, Uri uri, boolean image) {
-        LogPrinter.i("wyt","editItem : " + uri);
-        Intent intent = new Intent(Intent.ACTION_EDIT);
-        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        intent.setDataAndType(uri, image ? "image/jpeg" : "video/*");
-        ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.edit)));
+
+        if(image) {
+            Intent intent = new Intent(ctx, EditActivity.class);
+
+            intent.putExtra(BaseEditorManager.SRC_PIC_PATH, MediaSetUtils.uriToPath(ctx, uri));
+
+            ctx.startActivity(intent);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_EDIT);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            intent.setDataAndType(uri, "video/*");
+            ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.edit)));
+        }
     }
 
     public static boolean deleteItem(Context ctx, Uri uri, boolean image) {

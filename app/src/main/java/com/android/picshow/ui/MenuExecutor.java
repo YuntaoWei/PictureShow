@@ -113,12 +113,11 @@ public class MenuExecutor {
     public void execute(int action, ArrayList<Uri> u, boolean image, ExcuteListener l) {
         ExecuteTask deleteTask = new ExecuteTask(u, l, image);
         deleteTask.execute(action);
-        /*switch (action) {
+        switch (action) {
             case MENU_ACTION_DELETE :
                 if(u.size() == 1) {
                     PicShowUtils.deleteItem(mContext, u.get(0), image);
                 } else {
-                    ExecuteTask deleteTask = new ExecuteTask(u, l);
                     deleteTask.execute(action);
                 }
                 break;
@@ -140,9 +139,7 @@ public class MenuExecutor {
                 break;
 
             default:
-                return false;
         }
-        return true;*/
     }
 
     private void showConfirmDialog(final Uri u, final boolean image) {
@@ -157,7 +154,7 @@ public class MenuExecutor {
             }
 
         });
-        confirmDialog.setNegativeListener(R.string.cancle, null);
+        confirmDialog.setNegativeListener(R.string.cancel, null);
         confirmDialog.show();
     }
 

@@ -29,6 +29,10 @@
         <activity android:name=".app.PhotoActivity"
             android:theme="@style/PhotoPageActivity"
             ></activity>
+
+        <activity android:name="com.android.picshow.edit.editorui.EditActivity"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

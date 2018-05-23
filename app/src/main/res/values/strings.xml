@@ -14,5 +14,29 @@
     <string name="detail">Detail</string>
 
     <string name="confirm">Confirm</string>
-    <string name="cancle">Cancel</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="saving_image">Save current image</string>
+
+    <string name="none">None</string>
+    <string name="aspect">Aspect</string>
+    <string name="aspect1to1_effect">1:1</string>
+    <string name="aspect4to3_effect">4:3</string>
+    <string name="aspect3to4_effect">3:4</string>
+    <string name="aspect5to7_effect">5:7</string>
+    <string name="aspect7to5_effect">7:5</string>
+    <string name="save">Save</string>
+    <string name="compare_original">Compare</string>
+    <string name="paint_size">Paint size</string>
+    <string name="editor_grad_brightness">Brightness</string>
+    <string name="editor_grad_contrast">Contrast</string>
+    <string name="editor_grad_color_temperature">Color temperature</string>
+    <string name="editor_grad_saturation">Saturation</string>
+    <string name="color">Color</string>
+    <string name="beautify">Beautify</string>
+    <string name="crop">Crop</string>
+    <string name="enhance">Enhance</string>
+    <string name="mosaic">Mosaic</string>
+    <string name="draw">Paint</string>
+
 </resources>

@@ -256,7 +256,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoDataLoader.
                 break;
 
             case R.id.edit:
-                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, list, image, null);
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_EDIT, list, image, null);
                 break;
 
             case R.id.delete:
