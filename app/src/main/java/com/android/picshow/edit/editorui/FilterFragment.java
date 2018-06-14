@@ -2,6 +2,7 @@ package com.android.picshow.edit.editorui;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import com.android.picshow.edit.editor.BaseEditorManager;
 import com.android.picshow.edit.editor.filters.BaseEditor;
 import com.android.picshow.edit.editor.filters.FilterType;
 import com.android.picshow.edit.editor.filters.NativeFilter;
+import com.android.picshow.edit.editor.filters.NewFilters;
 import com.android.picshow.edit.editor.utils.ImageUtils;
 
 /**
@@ -270,6 +272,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Ba
         });
 
         loadFilterThumbIcon();
+        //loadNewFilterThumbIcon();
     }
 
     private void loadFilterThumbIcon() {
@@ -294,45 +297,110 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Ba
                 });
     }
 
-    private void setDrawableTop(TextView v, Drawable d) {
+    private void loadNewFilterThumbIcon() {
+        ImageUtils.loadNewFilterThumb(mActivity, pictureBitmap, BaseEditorManager.FILTER_THUMB_SIZE,
+                BaseEditorManager.FILTER_THUMB_SIZE, new ImageUtils.ThumbLoadListener() {
+
+                    @Override
+                    public void onLoadSuccess(final Bitmap bm, final int filterType) {
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setNewFilterIcon(bm, filterType);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onLoadFailed(int filterType) {
+
+                    }
+
+                });
+    }
+
+    private void setDrawableTop(TextView v, Drawable d, String text) {
         d.setBounds(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
         v.setCompoundDrawables(null, d, null, null);
+        v.setText(text);
+    }
+
+    private void setNewFilterIcon(Bitmap bm, int type) {
+        Drawable d = new BitmapDrawable(mActivity.getResources(), bm);
+        Resources r = mActivity.getResources();
+
+        switch (type) {
+            case NewFilters.FilterType.GAUSSIAN_BLUR_FILTER:
+                setDrawableTop(filterGray, d, r.getString(R.string.new_filter_gauss));
+                break;
+
+            case NewFilters.FilterType.GAUSSIAN_SELECT_BLUR_FILTER:
+                setDrawableTop(filterLOMO, d, r.getString(R.string.new_filter_gauss_select));
+                break;
+
+            case NewFilters.FilterType.SOBEL_EDGE_DETECTION_FILTER:
+                setDrawableTop(filterNostalgic, d, r.getString(R.string.new_filter_sobel_edge));
+                break;
+
+            case NewFilters.FilterType.LOW_PASS_FILTER:
+                setDrawableTop(filterBrown, d, r.getString(R.string.new_filter_brightness));
+                break;
+
+            case NewFilters.FilterType.MOSAIC_FILTER:
+                setDrawableTop(filterComics, d, r.getString(R.string.new_filter_mosaic));
+                break;
+
+            case NewFilters.FilterType.SKETCH_FILTER:
+                setDrawableTop(filterMosatic, d, r.getString(R.string.new_filter_sketch_pencil));
+                break;
+
+            case NewFilters.FilterType.TOON_FILTER:
+                setDrawableTop(filterSketchPencil, d, r.getString(R.string.new_filter_toon));
+                break;
+
+            case NewFilters.FilterType.SMOOTH_TOON_FILTER:
+                setDrawableTop(filterNiHong, d, r.getString(R.string.new_filter_smooth_toon));
+                break;
+        }
+
+
     }
 
     private void setFilterIcon(Bitmap bm, int type) {
         Drawable d = new BitmapDrawable(mActivity.getResources(), bm);
+        Resources r = mActivity.getResources();
         switch (type) {
 
             case FilterType.FILTER4GRAY:
-                setDrawableTop(filterGray, d);
+                setDrawableTop(filterGray, d, r.getString(R.string.filter_gray));
                 break;
 
             case FilterType.FILTER4LOMO:
-                setDrawableTop(filterLOMO, d);
+                setDrawableTop(filterLOMO, d, r.getString(R.string.filter_lomo));
                 break;
 
             case FilterType.FILTER4NOSTALGIC:
-                setDrawableTop(filterNostalgic, d);
+                setDrawableTop(filterNostalgic, d, r.getString(R.string.filter_no_stalgia));
                 break;
 
             case FilterType.FILTER4BROWN:
-                setDrawableTop(filterBrown, d);
+                setDrawableTop(filterBrown, d, r.getString(R.string.filter_brown));
                 break;
 
             case FilterType.FILTER4COMICS:
-                setDrawableTop(filterComics, d);
+                setDrawableTop(filterComics, d, r.getString(R.string.filter_comic));
                 break;
 
             case FilterType.FILTER4MOSATIC:
-                setDrawableTop(filterMosatic, d);
+                setDrawableTop(filterMosatic, d, r.getString(R.string.filter_mosaic));
                 break;
 
             case FilterType.FILTER4SKETCH_PENCIL:
-                setDrawableTop(filterSketchPencil, d);
+                setDrawableTop(filterSketchPencil, d, r.getString(R.string.filter_sketch_pencil));
                 break;
 
             case FilterType.FILTER4NiHong:
-                setDrawableTop(filterNiHong, d);
+                setDrawableTop(filterNiHong, d, r.getString(R.string.filter_nenon));
                 break;
 
 

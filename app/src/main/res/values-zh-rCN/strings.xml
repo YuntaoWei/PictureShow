@@ -37,4 +37,28 @@
     <string name="enhance">"调整"</string>
     <string name="mosaic">"马赛克"</string>
     <string name="draw">"涂鸦"</string>
+
+    <!-- for filter start-->
+    <string name="filter_gray">灰色</string>
+    <string name="filter_lomo">LOMO</string>
+    <string name="filter_no_stalgia">怀旧</string>
+    <string name="filter_brown">褐色</string>
+    <string name="filter_comic">漫画</string>
+    <string name="filter_mosaic">马赛克</string>
+    <string name="filter_sketch_pencil">铅笔画</string>
+    <string name="filter_nenon">霓虹</string>
+    <string name="filter_test">滤镜效果测试</string>
+    <!-- for filter end-->
+
+    <!-- for new filter start-->
+    <!--<string name="new_filter_gray">灰色</string>-->
+    <string name="new_filter_gauss">模糊</string>
+    <string name="new_filter_gauss_select">区域模糊</string>
+    <string name="new_filter_sobel_edge">漫画反色</string>
+    <string name="new_filter_brightness">加亮</string>
+    <string name="new_filter_mosaic">马赛克</string>
+    <string name="new_filter_sketch_pencil">铅笔画</string>
+    <string name="new_filter_toon">卡通1</string>
+    <string name="new_filter_smooth_toon">卡通2</string>
+    <!-- for filter end-->
 </resources>

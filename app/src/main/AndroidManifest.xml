@@ -33,6 +33,19 @@
         <activity android:name="com.android.picshow.edit.editorui.EditActivity"
             android:screenOrientation="portrait"
             />
+
+        <activity android:name=".app.FilterTestActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/filter_test"
+            >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>
