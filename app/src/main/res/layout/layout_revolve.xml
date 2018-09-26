@@ -9,8 +9,7 @@
     <RelativeLayout
         android:id="@+id/picture_revole"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/common_top_bar" >
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/picture"

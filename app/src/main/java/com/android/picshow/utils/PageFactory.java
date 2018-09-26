@@ -1,6 +1,7 @@
 package com.android.picshow.utils;
 
 import android.support.v4.app.Fragment;
+import android.util.SparseArray;
 
 import com.android.picshow.app.AlbumSetPage;
 import com.android.picshow.app.TimeLinePage;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 
 public class PageFactory {
 
-    private static HashMap<Integer, Fragment> frg = new HashMap<Integer, Fragment>();
+    private static SparseArray<Fragment> frg = new SparseArray<>();
 
     public static final int INDEX_TIMELINE = 0;
     public static final int INDEX_ALBUMSET = 1;

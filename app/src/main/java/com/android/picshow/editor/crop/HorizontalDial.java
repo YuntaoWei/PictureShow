@@ -61,17 +61,11 @@ public class HorizontalDial extends View implements View.OnTouchListener {
 
 
     public HorizontalDial(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-
-    public HorizontalDial(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr);
         selectColor = context.getResources().getColor(R.color.select_text_color);
         initPaint();
         setOnTouchListener(this);
     }
-
 
     private void initPaint() {
         linePaint = new Paint();

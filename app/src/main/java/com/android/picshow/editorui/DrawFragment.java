@@ -37,7 +37,6 @@ public class DrawFragment extends Fragment implements View.OnClickListener, Base
     private DrawingBoardView drawView;
 
     ScrawlTools casualWaterUtil = null;
-    private LinearLayout drawLayout;
     String mPath;
     private EditActivity mActivity;
 
@@ -65,7 +64,7 @@ public class DrawFragment extends Fragment implements View.OnClickListener, Base
 
     private void initView() {
         drawView = (DrawingBoardView) mainView.findViewById(R.id.drawView);
-        drawLayout = (LinearLayout) drawView.findViewById(R.id.drawLayout);
+        LinearLayout drawLayout = (LinearLayout) drawView.findViewById(R.id.drawLayout);
 
         mActivity.onFragmentAttached();
     }
@@ -219,18 +218,7 @@ public class DrawFragment extends Fragment implements View.OnClickListener, Base
                 DrawAttribute.DrawStatus.PEN_WATER, bm, color);
     }
 
-    /** color pick button **/
-    private Button btnColorWhite, btnColorGray, btnColorBlack,btnColorOrange,
-            btnColorYellow, btnColorGreen, btnColorBlue, btnColorRed;
-
-    private SeekBar paintSize;
-
     private Button btnColorPicker;
-
-    private Button btnCancel, btnRevocation, btnCancelRevocation, btnSave;
-
-    /** the paint style **/
-    private Button btnText, btnCurve, btnLine, btnArrow, btnCircle, btnRectangle;
 
     /** color picker view, it shows when color picker clicked.**/
     private View colorPanel;
@@ -245,58 +233,36 @@ public class DrawFragment extends Fragment implements View.OnClickListener, Base
 
         colorPanel = v.findViewById(R.id.color_panel);
 
-        btnColorWhite = (Button) v.findViewById(R.id.color_white);
-        btnColorGray = (Button) v.findViewById(R.id.color_gray);
-        btnColorBlack = (Button) v.findViewById(R.id.color_black);
-        btnColorOrange = (Button) v.findViewById(R.id.color_orange);
-        btnColorYellow = (Button) v.findViewById(R.id.color_yellow);
-        btnColorGreen = (Button) v.findViewById(R.id.color_green);
-        btnColorBlue = (Button) v.findViewById(R.id.color_blue);
-        btnColorRed = (Button) v.findViewById(R.id.color_red);
+        /* color pick button */
+        v.findViewById(R.id.color_white).setOnClickListener(this);
+        v.findViewById(R.id.color_gray).setOnClickListener(this);
+        v.findViewById(R.id.color_black).setOnClickListener(this);
+        v.findViewById(R.id.color_orange).setOnClickListener(this);
+        v.findViewById(R.id.color_yellow).setOnClickListener(this);
+        v.findViewById(R.id.color_green).setOnClickListener(this);
+        v.findViewById(R.id.color_blue).setOnClickListener(this);
+        v.findViewById(R.id.color_red).setOnClickListener(this);
 
-        btnColorWhite.setOnClickListener(this);
-        btnColorGray.setOnClickListener(this);
-        btnColorBlack.setOnClickListener(this);
-        btnColorOrange.setOnClickListener(this);
-        btnColorYellow.setOnClickListener(this);
-        btnColorGreen.setOnClickListener(this);
-        btnColorBlue.setOnClickListener(this);
-        btnColorRed.setOnClickListener(this);
-
-
-        paintSize = (SeekBar) v.findViewById(R.id.seek);
+        SeekBar paintSize = (SeekBar) v.findViewById(R.id.seek);
         paintSize.setProgress(50);
         paintSize.setMax(100);
         paintSize.setOnSeekBarChangeListener(this);
 
-        btnColorPicker = (Button) v.findViewById(R.id.color_picker);
-        btnColorPicker.setOnClickListener(this);
+        v.findViewById(R.id.color_picker).setOnClickListener(this);
 
 
-        btnText = (Button) v.findViewById(R.id.draw_text);
-        btnCurve = (Button) v.findViewById(R.id.draw_curve);
-        btnLine = (Button) v.findViewById(R.id.draw_line);
-        btnArrow = (Button) v.findViewById(R.id.draw_arrow);
-        btnCircle = (Button) v.findViewById(R.id.draw_circle);
-        btnRectangle = (Button) v.findViewById(R.id.draw_rec);
+        /* the paint style */
+        v.findViewById(R.id.draw_text).setOnClickListener(this);
+        v.findViewById(R.id.draw_curve).setOnClickListener(this);
+        v.findViewById(R.id.draw_line).setOnClickListener(this);
+        v.findViewById(R.id.draw_arrow).setOnClickListener(this);
+        v.findViewById(R.id.draw_circle).setOnClickListener(this);
+        v.findViewById(R.id.draw_rec).setOnClickListener(this);
 
-        btnText.setOnClickListener(this);
-        btnCurve.setOnClickListener(this);
-        btnLine.setOnClickListener(this);
-        btnArrow.setOnClickListener(this);
-        btnCircle.setOnClickListener(this);
-        btnRectangle.setOnClickListener(this);
-
-
-        btnCancel = (Button) v.findViewById(R.id.cancel);
-        btnRevocation = (Button) v.findViewById(R.id.revocation);
-        btnCancelRevocation = (Button) v.findViewById(R.id.cancel_revocation);
-        btnSave = (Button) v.findViewById(R.id.save);
-
-        btnCancel.setOnClickListener(this);
-        btnRevocation.setOnClickListener(this);
-        btnCancelRevocation.setOnClickListener(this);
-        btnSave.setOnClickListener(this);
+        v.findViewById(R.id.cancel).setOnClickListener(this);
+        v.findViewById(R.id.revocation).setOnClickListener(this);
+        v.findViewById(R.id.cancel_revocation).setOnClickListener(this);
+        v.findViewById(R.id.save).setOnClickListener(this);
 
     }
 

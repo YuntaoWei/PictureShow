@@ -135,22 +135,22 @@ public class PicShowUtils {
      * @param desc use DESC or ASC.
      */
     public static void sortItem(Album[] original,boolean desc) {
-        mergeSort(original,0,1);
+        mergeSort(original, 1);
     }
 
-    private static void mergeSort(Album[] a, int s, int len) {
+    private static void mergeSort(Album[] a, int len) {
         int size = a.length;
         int mid = size / (len << 1);
         int c = size & ((len << 1) - 1);
         if (mid == 0)
             return;
         for (int i = 0; i < mid; ++i) {
-            s = i * 2 * len;
+            int s = i * 2 * len;
             merge(a, s, s + len, (len << 1) + s - 1);
         }
         if (c != 0)
             merge(a, size - c - 2 * len, size - c, size - 1);
-        mergeSort(a, 0, 2 * len);
+        mergeSort(a, 2 * len);
     }
 
     private static void merge(Album[] a, int s, int m, int t) {
@@ -220,6 +220,8 @@ public class PicShowUtils {
             while(c.moveToNext()) {
                 path = c.getString(0);
             }
+            c.close();
+            c = null;
         }
         int row = ctx.getContentResolver().delete(item.itemUrl, null, null);
         if(row > 0 && path != null) {
@@ -235,8 +237,11 @@ public class PicShowUtils {
                 null, null,null);
         String absPath = null;
         String newFilePath = null;
-        if(c != null && c.moveToNext())
+        if(c != null && c.moveToNext()) {
             absPath = c.getString(0);
+            c.close();
+            c = null;
+        }
 
         boolean result = false;
         if(absPath != null) {

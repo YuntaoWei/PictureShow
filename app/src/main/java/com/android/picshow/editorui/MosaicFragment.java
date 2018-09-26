@@ -106,7 +106,6 @@ public class MosaicFragment extends Fragment implements View.OnClickListener, Ba
     private View topPanel;
     private SeekBar seek;
     private Button btnSmall, btnBig, btnBlur, btnEraser;
-    private Button btnCancel, btnRevocation, btnCancelRevocaton, btnSave;
 
     @Override
     public void initPanelView(View v) {
@@ -127,14 +126,10 @@ public class MosaicFragment extends Fragment implements View.OnClickListener, Ba
         btnBlur.setOnClickListener(this);
         btnEraser.setOnClickListener(this);
 
-        btnCancel = (Button) v.findViewById(R.id.cancel);
-        btnRevocation = (Button) v.findViewById(R.id.revocation);
-        btnCancelRevocaton = (Button) v.findViewById(R.id.cancel_revocation);
-        btnSave = (Button) v.findViewById(R.id.save);
-        btnCancel.setOnClickListener(this);
-        btnRevocation.setOnClickListener(this);
-        btnCancelRevocaton.setOnClickListener(this);
-        btnSave.setOnClickListener(this);
+        v.findViewById(R.id.cancel).setOnClickListener(this);
+        v.findViewById(R.id.revocation).setOnClickListener(this);
+        v.findViewById(R.id.cancel_revocation).setOnClickListener(this);
+        v.findViewById(R.id.save).setOnClickListener(this);
     }
 
     @Override

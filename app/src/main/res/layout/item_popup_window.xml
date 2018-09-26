@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/popup_margin_start"
+            android:layout_marginLeft="@dimen/popup_margin_start"
             android:src="@mipmap/arrow_carrot_right"
             android:visibility="gone"/>
 
@@ -35,7 +36,6 @@
             android:minHeight="@dimen/popup_min_line_item_height"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#333333"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:textSize="19sp"/>
     </LinearLayout>
 

@@ -10,8 +10,7 @@
         android:id="@+id/picture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/common_top_bar"
-        android:layout_above="@+id/filtersSV"
+        android:layout_above="@id/filtersSV"
         >
 
         <ImageView

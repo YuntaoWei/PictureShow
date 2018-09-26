@@ -190,7 +190,7 @@ public class AlbumSetDataLoader implements DataLoader {
 
     }
 
-    private static final int findIndexFromBucket(Album[] data, int bucket) {
+    private int findIndexFromBucket(Album[] data, int bucket) {
         for (int i = 0; i < data.length; i++) {
             if(data[i].bucketID == bucket)
                 return i;

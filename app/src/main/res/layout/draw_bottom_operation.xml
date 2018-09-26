@@ -7,6 +7,7 @@
     <HorizontalScrollView
         android:id="@+id/color_panel"
         android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_width="match_parent"
         android:visibility="invisible"
         android:layout_height="33dp">
@@ -23,6 +24,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_white"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -31,6 +33,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_gray"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -39,6 +42,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_black"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -47,6 +51,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_orange"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -55,6 +60,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_yellow"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -63,6 +69,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_green"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -71,6 +78,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_blue"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
             <Button
@@ -79,6 +87,7 @@
                 android:layout_height="20dp"
                 android:background="@drawable/circle_button_red"
                 android:layout_marginStart="30dp"
+                android:layout_marginLeft="30dp"
                 />
 
         </LinearLayout>

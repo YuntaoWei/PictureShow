@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public abstract class PermissionActivity extends AppCompatActivity {
         boolean needRequest = false;
         ArrayList<String> permissionList = new ArrayList<String>();
         for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);
                 needRequest = true;
             }
@@ -64,7 +65,7 @@ public abstract class PermissionActivity extends AppCompatActivity {
                     permissionArray[i] = permissionList.get(i);
                 }
 
-                requestPermissions(permissionArray, requestCode);
+                ActivityCompat.requestPermissions(this, permissionArray, requestCode);
             }
         }
         permissionGranted = !needRequest;

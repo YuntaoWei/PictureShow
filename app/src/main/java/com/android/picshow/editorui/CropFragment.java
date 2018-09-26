@@ -286,9 +286,14 @@ public class CropFragment extends Fragment implements BaseEditor, View.OnClickLi
     }
 
 
-    private TextView cropMenu1, cropMenu2, cropMenu3, cropMenu4, cropMenu5, cropMenu6, cropMenu7, btnCrop, btnRotate;
-    private Button btnCancel, btnSave, btnRecovation, btnCacekRevocation;
-    private HorizontalDial seekBar;
+    private TextView cropMenu1;
+    private TextView cropMenu2;
+    private TextView cropMenu3;
+    private TextView cropMenu4;
+    private TextView cropMenu5;
+    private TextView cropMenu6;
+    private TextView cropMenu7;
+    private TextView btnCrop;
 
     @Override
     public void initPanelView(View v) {
@@ -321,8 +326,8 @@ public class CropFragment extends Fragment implements BaseEditor, View.OnClickLi
 
     private void initCenterOperationPanel(View v) {
         btnCrop = (TextView) v.findViewById(R.id.crop_menu);
-        btnRotate = (TextView) v.findViewById(R.id.rotate_menu);
-        seekBar = (HorizontalDial) v.findViewById(R.id.seek);
+        TextView btnRotate = (TextView) v.findViewById(R.id.rotate_menu);
+        HorizontalDial seekBar = (HorizontalDial) v.findViewById(R.id.seek);
 
         btnCrop.setOnClickListener(this);
         btnRotate.setOnClickListener(this);
@@ -354,10 +359,10 @@ public class CropFragment extends Fragment implements BaseEditor, View.OnClickLi
     }
 
     private void initBottomOperationPanel(View v) {
-        btnCancel = (Button) v.findViewById(R.id.cancel);
-        btnSave = (Button) v.findViewById(R.id.save);
-        btnRecovation = (Button) v.findViewById(R.id.revocation);
-        btnCacekRevocation = (Button) v.findViewById(R.id.cancel_revocation);
+        Button btnCancel = (Button) v.findViewById(R.id.cancel);
+        Button btnSave = (Button) v.findViewById(R.id.save);
+        Button btnRecovation = (Button) v.findViewById(R.id.revocation);
+        Button btnCacekRevocation = (Button) v.findViewById(R.id.cancel_revocation);
 
         btnCancel.setOnClickListener(this);
         btnSave.setOnClickListener(this);

@@ -7,6 +7,7 @@ import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.SparseArray;
 
 import com.android.picshow.model.Album;
 import com.android.picshow.model.PhotoItem;
@@ -223,7 +224,7 @@ public class MediaSetUtils {
     }
 
     public static Album[] queryAllAlbumSet(Context mContext) {
-        HashMap<Integer,Album> allAlbum = new HashMap<>();
+        SparseArray<Album> allAlbums = new SparseArray<>();
         //All Image Album.
         Cursor cImage = mContext.getContentResolver().query(IMAGE_URI,
                 ALBUM_PROJECTION,
@@ -237,7 +238,7 @@ public class MediaSetUtils {
         try{
             while (cImage.moveToNext()) {
                 int bucket = cImage.getInt(ALBUM_BUCKET_INDEX);
-                allAlbum.put(bucket,new Album(bucket,
+                allAlbums.put(bucket,new Album(bucket,
                         cImage.getString(ALBUM_NAME_INDEX),
                         cImage.getInt(ALBUM_DATE_INDEX),
                         cImage.getString(ALBUM_DATA_INDEX),
@@ -262,7 +263,7 @@ public class MediaSetUtils {
                 int bucket = cVideo.getInt(ALBUM_BUCKET_INDEX);
                 //Maybe there are some videos and images in the same folder,
                 //Prevent add repeatedly.
-                Album newAlbum = allAlbum.get(bucket);
+                Album newAlbum = allAlbums.get(bucket);
                 int dateToken = cVideo.getInt(ALBUM_DATE_INDEX);
                 int count = cVideo.getInt(ALBUM_COUNT_INDEX);
                 if(newAlbum != null) {
@@ -272,9 +273,9 @@ public class MediaSetUtils {
                         continue;
                     }
                     else
-                        allAlbum.remove(bucket);
+                        allAlbums.remove(bucket);
                 }
-                allAlbum.put(bucket,new Album(bucket,
+                allAlbums.put(bucket,new Album(bucket,
                         cVideo.getString(ALBUM_NAME_INDEX),
                         dateToken,
                         cVideo.getString(ALBUM_DATA_INDEX),
@@ -284,10 +285,13 @@ public class MediaSetUtils {
         } finally {
             cVideo.close();
         }
-        Album[] albums = new Album[allAlbum.size()];
-        allAlbum.values().toArray(albums);
-        allAlbum.clear();
-        allAlbum = null;
+        int size = allAlbums.size();
+        Album[] albums = new Album[size];
+        for(int i = 0; i < size; i++) {
+            albums[i] = allAlbums.valueAt(i);
+        }
+        allAlbums.clear();
+        allAlbums = null;
         return albums;
     }
 
