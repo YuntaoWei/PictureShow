@@ -2,14 +2,18 @@ package com.android.picshow.view.activity;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.PageControlAdapter;
+import com.android.picshow.app.TimeLinePage;
+import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.PageFactory;
 import com.android.picshow.view.AppDelegate;
 
@@ -24,7 +28,8 @@ public class PicShowActivityDelegate extends AppDelegate {
 
     @Override
     public void initWidget() {
-        ((ViewPager)getView(R.id.vpager)).setAdapter(
+        viewPager = getView(R.id.vpager);
+        viewPager.setAdapter(
                 new PageControlAdapter(((FragmentActivity)getActivity()).getSupportFragmentManager(), PageFactory.getMainPage()));
     }
 
@@ -37,6 +42,7 @@ public class PicShowActivityDelegate extends AppDelegate {
         if(viewPager == null)
             viewPager = getView(R.id.vpager);
 
+
         viewPager.setCurrentItem(index);
     }
 
@@ -46,6 +52,14 @@ public class PicShowActivityDelegate extends AppDelegate {
         } else {
             getView(R.id.album_title).setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setTitle(String s) {
+        ((TextView)getView(R.id.album_title)).setText(s);
+    }
+
+    public void setTitle(int res) {
+        ((TextView)getView(R.id.album_title)).setText(res);
     }
 
     /**
@@ -71,7 +85,6 @@ public class PicShowActivityDelegate extends AppDelegate {
 
                 ((Button)getView(R.id.btn_photo)).setTextColor(res.getColor(R.color.default_text_color));
                 ((Button)getView(R.id.btn_photo)).setCompoundDrawables(null, photoDefaultDrawable, null, null);
-                setTitleVisibility(true);
                 return;
 
             case PageFactory.INDEX_TIMELINE:
@@ -91,12 +104,24 @@ public class PicShowActivityDelegate extends AppDelegate {
 
                 ((Button)getView(R.id.btn_photo)).setTextColor(res.getColor(R.color.select_text_color));
                 ((Button)getView(R.id.btn_photo)).setCompoundDrawables(null, photoSelectDrawable, null, null);
-                setTitleVisibility(false);
                 return;
 
             default:
                 break;
         }
+    }
+
+    public void setBottomBarVisibility(boolean visibility) {
+        getView(R.id.bottombar).setVisibility(visibility ? View.VISIBLE : View.GONE);
+    }
+
+    public boolean onBackPressed(int current) {
+        PageControlAdapter adapter = (PageControlAdapter) viewPager.getAdapter();
+        Fragment f = adapter.getItem(current);
+        if(f instanceof TimeLinePage) {
+            return ((TimeLinePage)f).onBackPressed();
+        }
+        return false;
     }
 
 }

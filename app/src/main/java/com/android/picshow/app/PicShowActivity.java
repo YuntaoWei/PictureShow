@@ -6,11 +6,14 @@ import android.view.View;
 
 import com.android.picshow.R;
 import com.android.picshow.presenter.BaseActivity;
+import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.PageFactory;
 import com.android.picshow.view.activity.PicShowActivityDelegate;
 
 
 public class PicShowActivity extends BaseActivity<PicShowActivityDelegate> implements View.OnClickListener, ViewPager.OnPageChangeListener{
+
+    int currentPageIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,8 @@ public class PicShowActivity extends BaseActivity<PicShowActivityDelegate> imple
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if(!viewDelegate.onBackPressed(currentPageIndex))
+            super.onBackPressed();
     }
 
     @Override
@@ -72,11 +76,21 @@ public class PicShowActivity extends BaseActivity<PicShowActivityDelegate> imple
 
     @Override
     public void onPageSelected(int position) {
+        currentPageIndex = position;
         viewDelegate.changeButtonSelectedStatus(position);
+        if(position == PageFactory.INDEX_TIMELINE)
+            viewDelegate.setTitle(R.string.btn_photo);
+        else
+            viewDelegate.setTitle(R.string.btn_album);
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
 
     }
+
+    public void setBottombarVisibility(boolean visible) {
+        viewDelegate.setBottomBarVisibility(visible);
+    }
+
 }

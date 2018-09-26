@@ -37,13 +37,14 @@
                 android:textColor="#333333"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:text="时刻"
+                android:text="@string/btn_photo"
                 android:layout_weight="1"
                 />
 
             <Button
                 android:id="@+id/search_photo"
                 android:background="@drawable/search_n"
+                android:visibility="invisible"
                 android:layout_width="18dp"
                 android:layout_height="20dp"/>
 

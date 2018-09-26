@@ -16,6 +16,7 @@ import com.android.picshow.view.IDelegate;
 public abstract class BaseActivity<T extends IDelegate> extends PermissionActivity {
 
     protected T viewDelegate;
+    protected boolean icBlack = false;
 
     public BaseActivity() {
         try {
@@ -50,7 +51,11 @@ public abstract class BaseActivity<T extends IDelegate> extends PermissionActivi
         Toolbar toolbar = viewDelegate.getToolbar();
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            toolbar.setNavigationIcon(R.mipmap.ic_back);
+            if(icBlack) {
+                toolbar.setNavigationIcon(R.drawable.back_black_n);
+            } else {
+                toolbar.setNavigationIcon(R.mipmap.ic_back);
+            }
         }
     }
 

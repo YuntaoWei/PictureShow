@@ -54,7 +54,6 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PicShowUtils.extendLayoutToFulScreen(this);
-        initView();
         init();
     }
 
@@ -206,6 +205,10 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
         list.add(PhotoPageUtils.getUriFromCursor(c));
 
         switch (v.getId()) {
+            case -1:
+                finish();
+                break;
+
             case R.id.share:
                 menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE, list, null);
                 break;

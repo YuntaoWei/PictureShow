@@ -78,10 +78,9 @@ public class SelectionManager {
 
     public void clearSelection() {
         if(selectedPath != null) {
-
             selectedPath.clear();
-            exitSelectionMode();
         }
+        exitSelectionMode();
     }
 
 

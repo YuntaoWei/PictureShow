@@ -22,12 +22,14 @@ import com.android.picshow.model.LoadListener;
 import com.android.picshow.model.Path;
 import com.android.picshow.model.PhotoItem;
 import com.android.picshow.model.TimeLinePageDataLoader;
+import com.android.picshow.presenter.BaseFragment;
 import com.android.picshow.test.Activitya;
 import com.android.picshow.ui.MenuExecutor;
 import com.android.picshow.ui.SelectionManager;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
+import com.android.picshow.view.fragment.TimeLinePageDelegate;
 
 import java.util.List;
 
@@ -39,7 +41,8 @@ import static com.android.picshow.test.Activitya.TEST_DEBUG;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class TimeLinePage extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class TimeLinePage extends BaseFragment<TimeLinePageDelegate> implements AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener, View.OnClickListener {
 
     private static final String TAG = "TimeLinePage";
     public static final int UPDATE = 0x111;
@@ -48,16 +51,13 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     private LoadListener myLoadListener;
     private TimeLinePageDataLoader dataLoader;
     private Handler mainHandler;
-    private View rootView;
-    private GridView gridView;
-    private View bottomView;
+
     private TimeLineAdapter gridAdapter;
     private int decodeBitmapWidth;
     private SelectionManager selectionManager;
     private SelectionManager.SelectionListener selectionListener;
-    private Button btnShare, btnDelete, btnEdit, btnDetail;
     private MenuExecutor menuExecutor;
-
+    MenuExecutor.ExcuteListener excuteListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,15 +80,6 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
         GlideApp.get(getContext()).clearMemory();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.picshow_timeline,null);
-        rootView = v;
-        LogPrinter.i(TAG,"onCreateView:" + v);
-        return v;
-    }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -97,8 +88,10 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
+    protected void bindEvenListener() {
+        viewDelegate.setGridViewItemOnLongClickListener(this);
+        viewDelegate.setGridViewOnItemClickListener(this);
+        viewDelegate.setOnClickListener(this, R.id.share, R.id.edit, R.id.delete, R.id.more);
     }
 
     @Override
@@ -112,6 +105,11 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
         if(gridAdapter != null)
             gridAdapter.destroy();
         gridAdapter = null;
+    }
+
+    @Override
+    protected Class<TimeLinePageDelegate> getDelegateClass() {
+        return TimeLinePageDelegate.class;
     }
 
     private void init() {
@@ -136,7 +134,6 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
         dataLoader = new TimeLinePageDataLoader(getActivity().getApplication(),myLoadListener);
 
         mainHandler = new Handler() {
-
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -145,59 +142,39 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
                             gridAdapter.setData((PhotoItem[]) msg.obj);
                         }
                         break;
-
                     default:
-
                         break;
                 }
             }
-
         };
 
         selectionListener = new SelectionManager.SelectionListener() {
             @Override
             public void enterSelectionMode() {
-
+                viewDelegate.setBottomViewVisiblity(true);
             }
 
             @Override
             public void exitSelectionMode() {
-                bottomView.setVisibility(View.GONE);
+                viewDelegate.setBottomViewVisiblity(false);
                 gridAdapter.setSelectState(false);
             }
 
             @Override
             public void onSelectionChange(Path p, boolean select) {
                 if(selectionManager.getSelectCount() > 1) {
-                    if(btnEdit != null) {
-                        btnEdit.setClickable(false);
-                        btnEdit.setAlpha(0.3f);
-                    }
-                    if(btnDetail != null) {
-                        btnDetail.setClickable(false);
-                        btnDetail.setAlpha(0.3f);
-                    }
+                    viewDelegate.disableDetailAndEdit();
                 } else {
-                    if (btnEdit != null) {
-                        btnEdit.setClickable(true);
-                        btnEdit.setAlpha(1.0f);
-                    }
-                    if (btnDetail != null) {
-                        btnDetail.setClickable(true);
-                        btnDetail.setAlpha(1.0f);
-                    }
+                    viewDelegate.enableDetailAndEdit();
                 }
             }
         };
     }
 
     private void initView() {
-        gridView = (GridView) rootView.findViewById(R.id.grid);
-        bottomView = rootView.findViewById(R.id.bottom_layout);
         selectionManager = new SelectionManager();
         gridAdapter = new TimeLineAdapter(getActivity(), null, selectionManager);
         gridAdapter.setDecodeSize(decodeBitmapWidth);
-        gridView.setAdapter(gridAdapter);
         gridAdapter.registerDataSetObserver(new DataSetObserver() {
 
             @Override
@@ -211,98 +188,32 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
             }
 
         });
-
-        gridView.setOnItemClickListener(this);
-        gridView.setOnItemLongClickListener(this);
+        viewDelegate.setGridViewAdapter(gridAdapter);
 
         selectionManager.setSelectionListener(selectionListener);
         menuExecutor = new MenuExecutor(getContext());
-        initBottomMenu();
-    }
-
-    private void initBottomMenu() {
-
-        if(bottomView == null) return;
-
-        btnDelete = bottomView.findViewById(R.id.delete);
-        btnDetail = bottomView.findViewById(R.id.more);
-        btnEdit = bottomView.findViewById(R.id.edit);
-        btnShare = bottomView.findViewById(R.id.share);
-        final MenuExecutor.ExcuteListener excuteListener = new MenuExecutor.ExcuteListener() {
+        excuteListener = new MenuExecutor.ExcuteListener() {
 
             @Override
             public void startExcute() {
                 //show dialog here.
-                showProgreeDialog();
+                viewDelegate.showProgreeDialog();
             }
 
             @Override
             public void excuteSuccess() {
                 //exit select mode and hide dialog.
                 gridAdapter.setSelectState(false);
-                if(dialog != null) {
-                    dialog.dismiss();
-                }
+                viewDelegate.dimissDialog();
                 selectionManager.clearSelection();
             }
 
             @Override
             public void excuteFailed() {
                 //some error occurs.
-                if(dialog != null)
-                    dialog.dismiss();
+                viewDelegate.dimissDialog();
             }
         };
-
-        View.OnClickListener onclick = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-
-                    case R.id.delete:
-                        menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE,
-                                selectionManager.getSelectItems(), excuteListener);
-                        break;
-
-                    case R.id.more:
-                        PhotoItem item = gridAdapter.getItem(selectionManager.getSelectPostion());
-                        String path = item.getPath();
-                        List<String> detail = PicShowUtils.getExifInfo(path);
-                        String title = item.getTitle();
-                        detail.add(0, "Title : /" + title);
-                        detail.add("Path : /" + path);
-                        PicShowUtils.showDetailDialog(getActivity(), detail);
-                        break;
-
-                    case R.id.edit:
-                        menuExecutor.execute(MenuExecutor.MENU_ACTION_EDIT,
-                                selectionManager.getSelectItems(), excuteListener);
-                        break;
-
-                    case R.id.share:
-                        menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE,
-                                selectionManager.getSelectItems(), excuteListener);
-                        break;
-
-
-                }
-            }
-        };
-        btnDelete.setOnClickListener(onclick);
-        btnDetail.setOnClickListener(onclick);
-        btnEdit.setOnClickListener(onclick);
-        btnShare.setOnClickListener(onclick);
-
-    }
-
-    private ProgressDialog dialog;
-    private void showProgreeDialog() {
-        if(dialog == null) {
-            dialog = new ProgressDialog(getActivity());
-            dialog.setCancelable(false);
-        }
-        dialog.show();
-
     }
 
     @Override
@@ -330,12 +241,53 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if(!gridAdapter.getSelectState()) {
             gridAdapter.setSelectState(true);
-            bottomView.setVisibility(View.VISIBLE);
+            viewDelegate.setBottomViewVisiblity(true);
         } else {
             gridAdapter.setSelectState(false);
-            bottomView.setVisibility(View.GONE);
         }
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.delete:
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE,
+                        selectionManager.getSelectItems(), excuteListener);
+                break;
+
+            case R.id.more:
+                PhotoItem item = gridAdapter.getItem(selectionManager.getSelectPostion());
+                String path = item.getPath();
+                List<String> detail = PicShowUtils.getExifInfo(path);
+                String title = item.getTitle();
+                detail.add(0, "Title : /" + title);
+                detail.add("Path : /" + path);
+                PicShowUtils.showDetailDialog(getActivity(), detail);
+                break;
+
+            case R.id.edit:
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_EDIT,
+                        selectionManager.getSelectItems(), excuteListener);
+                break;
+
+            case R.id.share:
+                menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE,
+                        selectionManager.getSelectItems(), excuteListener);
+                break;
+
+
+        }
+    }
+
+    public boolean onBackPressed() {
+        if(gridAdapter.getSelectState()) {
+            selectionManager.clearSelection();
+            gridAdapter.setSelectState(false);
+            return true;
+        }
+        return false;
     }
 
 }

@@ -21,11 +21,13 @@ import com.android.picshow.model.LoadListener;
 import com.android.picshow.model.Path;
 import com.android.picshow.model.PhotoItem;
 import com.android.picshow.adapter.TimeLineAdapter;
+import com.android.picshow.presenter.BaseActivity;
 import com.android.picshow.ui.MenuExecutor;
 import com.android.picshow.ui.SelectionManager;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
+import com.android.picshow.view.activity.AlbumPageDelegate;
 
 import java.util.List;
 
@@ -35,14 +37,13 @@ import java.util.List;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemClickListener,
+public class AlbumPage extends BaseActivity<AlbumPageDelegate> implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener {
 
     private static final String TAG = "AlbumPage";
 
     private static final int UPDATE = 0x111;
-    private GridView gridView;
-    private View bottomView;
+
     private TimeLineAdapter mAdapter;
     private int decodeBitmapWidth;
     private LoadListener myLoadListener;
@@ -52,15 +53,13 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
     private Toolbar mToolbar;
     private SelectionManager selectionManager;
     private SelectionManager.SelectionListener selectionListener;
-    private Button btnShare, btnDelete, btnEdit, btnDetail;
     private MenuExecutor menuExecutor;
+    private MenuExecutor.ExcuteListener excuteListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.picshow_album);
         init();
-        initView();
     }
 
     @Override
@@ -127,99 +126,36 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
 
             @Override
             public void exitSelectionMode() {
-                bottomView.setVisibility(View.GONE);
+                LogPrinter.i("ttt", "exitSelectionMode");
                 mAdapter.setSelectState(false);
+                viewDelegate.setBottomViewVisibility(false);
             }
 
             @Override
             public void onSelectionChange(Path p, boolean select) {
                 if(selectionManager.getSelectCount() > 1) {
-                    if(btnEdit != null) {
-                        btnEdit.setClickable(false);
-                        btnEdit.setAlpha(0.3f);
-                    }
-                    if(btnDetail != null) {
-                        btnDetail.setClickable(false);
-                        btnDetail.setAlpha(0.3f);
-                    }
+                    viewDelegate.disableEditAndMore();
                 } else {
-                    if (btnEdit != null) {
-                        btnEdit.setClickable(true);
-                        btnEdit.setAlpha(1.0f);
-                    }
-                    if (btnDetail != null) {
-                        btnDetail.setClickable(true);
-                        btnDetail.setAlpha(1.0f);
-                    }
+                    viewDelegate.enableEditAndMore();
                 }
             }
         };
+        selectionManager.setSelectionListener(selectionListener);
 
     }
 
-    private void initView() {
-        gridView = findViewById(R.id.grid);
-        mToolbar = findViewById(R.id.topbar);
-        bottomView = findViewById(R.id.bottom_layout);
-        setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+    @Override
+    protected void bindEvenListener() {
+        viewDelegate.setToolBarNavigationClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                if(mAdapter.getSelectState()) {
+                    selectionManager.clearSelection();
+                } else
+                    finish();
             }
         });
-        setTitle(getIntent().getStringExtra(MediaSetUtils.SET_NAME));
-        mAdapter = new TimeLineAdapter(this);
-        mAdapter.setDecodeSize(decodeBitmapWidth);
-        mAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-            }
-        });
-
-        selectionManager = new SelectionManager();
-        selectionManager.setSelectionListener(selectionListener);
-        gridView.setAdapter(mAdapter);
-        gridView.setOnItemClickListener(this);
-        gridView.setOnItemLongClickListener(this);
-        menuExecutor = new MenuExecutor(AlbumPage.this);
-        initBottomMenu();
-    }
-
-    private void initBottomMenu() {
-
-        if(bottomView == null) return;
-
-        btnDelete = bottomView.findViewById(R.id.delete);
-        btnDetail = bottomView.findViewById(R.id.more);
-        btnEdit = bottomView.findViewById(R.id.edit);
-        btnShare = bottomView.findViewById(R.id.share);
-        final MenuExecutor.ExcuteListener excuteListener = new MenuExecutor.ExcuteListener() {
-
-            @Override
-            public void startExcute() {
-                //show dialog here.
-                showProgreeDialog();
-            }
-
-            @Override
-            public void excuteSuccess() {
-                //exit select mode and hide dialog.
-                mAdapter.setSelectState(false);
-                if(dialog != null) {
-                    dialog.dismiss();
-                }
-                selectionManager.clearSelection();
-            }
-
-            @Override
-            public void excuteFailed() {
-                //some error occurs.
-                if(dialog != null)
-                    dialog.dismiss();
-            }
-        };
+        viewDelegate.setGridViewClickListener(this, this);
 
         View.OnClickListener onclick = new View.OnClickListener() {
             @Override
@@ -255,21 +191,49 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
                 }
             }
         };
-        btnDelete.setOnClickListener(onclick);
-        btnDetail.setOnClickListener(onclick);
-        btnEdit.setOnClickListener(onclick);
-        btnShare.setOnClickListener(onclick);
 
+        viewDelegate.setOnClickListener(onclick, R.id.delete, R.id.share, R.id.edit, R.id.more);
     }
 
-    private ProgressDialog dialog;
-    private void showProgreeDialog() {
-        if(dialog == null) {
-            dialog = new ProgressDialog(this);
-            dialog.setCancelable(false);
-        }
-        dialog.show();
+    @Override
+    protected void initView() {
+        icBlack = true;
+        mAdapter = new TimeLineAdapter(this);
+        mAdapter.setDecodeSize(decodeBitmapWidth);
+        mAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+        });
 
+        selectionManager = new SelectionManager();
+        menuExecutor = new MenuExecutor(AlbumPage.this);
+        excuteListener = new MenuExecutor.ExcuteListener() {
+            @Override
+            public void startExcute() {
+                //show dialog here.
+                viewDelegate.showProgreeDialog();
+            }
+
+            @Override
+            public void excuteSuccess() {
+                //exit select mode and hide dialog.
+                mAdapter.setSelectState(false);
+                viewDelegate.dimissDialog();
+                selectionManager.clearSelection();
+            }
+
+            @Override
+            public void excuteFailed() {
+                //some error occurs.
+                viewDelegate.dimissDialog();
+            }
+        };
+
+        super.initView();
+        viewDelegate.setGridViewAdapter(mAdapter);
+        viewDelegate.setTitle(getIntent().getStringExtra(MediaSetUtils.SET_NAME));
     }
 
     @Override
@@ -281,36 +245,47 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
     }
 
     @Override
+    protected Class getDelegateClass() {
+        return AlbumPageDelegate.class;
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(mAdapter.getSelectState()) {
             PhotoItem item = mAdapter.getItem(position);
-            updateItem(view, selectionManager.togglePath(position, item.toPath()));
+            viewDelegate.updateItem(view, selectionManager.togglePath(position, item.toPath()));
         } else {
             PhotoItem item = mAdapter.getItem(position);
-            Intent intent = new Intent(this, PhotoActivity.class);
-            intent.putExtra(MediaSetUtils.PHOTO_ID, position);
-            intent.putExtra(MediaSetUtils.PHOTO_PATH, item.getPath());
-            intent.putExtra(MediaSetUtils.BUCKET, bucketID);
-            startActivity(intent);
+            goToPhotoPage(item, position);
         }
     }
 
-    private void updateItem(View v, boolean select) {
-        TimeLineAdapter.ViewHolder vh = (TimeLineAdapter.ViewHolder)v.getTag();
-        if(vh != null) {
-            vh.selectIcon.setChecked(select);
-        }
+    private void goToPhotoPage(PhotoItem item, int position) {
+        Intent intent = new Intent(this, PhotoActivity.class);
+        intent.putExtra(MediaSetUtils.PHOTO_ID, position);
+        intent.putExtra(MediaSetUtils.PHOTO_PATH, item.getPath());
+        intent.putExtra(MediaSetUtils.BUCKET, bucketID);
+        startActivity(intent);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if(!mAdapter.getSelectState()) {
             mAdapter.setSelectState(true);
-            bottomView.setVisibility(View.VISIBLE);
+            viewDelegate.setBottomViewVisibility(true);
         } else {
             mAdapter.setSelectState(false);
-            bottomView.setVisibility(View.GONE);
+            viewDelegate.setBottomViewVisibility(false);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        LogPrinter.i("ttt", "onBackPressed : " + mAdapter.getSelectState());
+        if(mAdapter.getSelectState()) {
+            selectionManager.clearSelection();
+        } else
+            finish();
     }
 }

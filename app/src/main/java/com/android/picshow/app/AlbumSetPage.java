@@ -21,9 +21,11 @@ import com.android.picshow.model.Album;
 import com.android.picshow.model.AlbumSetDataLoader;
 import com.android.picshow.model.GlideApp;
 import com.android.picshow.model.LoadListener;
+import com.android.picshow.presenter.BaseFragment;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
+import com.android.picshow.view.fragment.AlbumSetPageDelegate;
 import com.bumptech.glide.load.DecodeFormat;
 
 /**
@@ -32,7 +34,7 @@ import com.bumptech.glide.load.DecodeFormat;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class AlbumSetPage extends Fragment {
+public class AlbumSetPage extends BaseFragment<AlbumSetPageDelegate> {
 
     public static final String TAG = "AlbumSetPage";
     private static final int UPDATE = 0x111;
@@ -40,8 +42,6 @@ public class AlbumSetPage extends Fragment {
     private LoadListener myLoadListener;
     private AlbumSetDataLoader dataLoader;
     private Handler mainHandler;
-    private View rootView;
-    private GridView gridView;
     private GridAdapter gridAdapter;
     private int decodeBitmapWidth;
 
@@ -66,18 +66,23 @@ public class AlbumSetPage extends Fragment {
         GlideApp.get(getContext()).clearMemory();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.picshow_albumset,null);
-        return v;
-    }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rootView = view;
         initView();
+    }
+
+    @Override
+    protected void bindEvenListener() {
+        viewDelegate.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startAlbumPage(gridAdapter.getItem(position).bucketID,
+                        gridAdapter.getItem(position).bucketDisplayName);
+            }
+
+        });
     }
 
     @Override
@@ -101,6 +106,11 @@ public class AlbumSetPage extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected Class<AlbumSetPageDelegate> getDelegateClass() {
+        return AlbumSetPageDelegate.class;
     }
 
     private void init() {
@@ -144,9 +154,7 @@ public class AlbumSetPage extends Fragment {
     }
 
     private void initView() {
-        gridView = (GridView) rootView.findViewById(R.id.grid);
         gridAdapter = new GridAdapter();
-        gridView.setAdapter(gridAdapter);
         gridAdapter.registerDataSetObserver(new DataSetObserver() {
 
             @Override
@@ -160,15 +168,8 @@ public class AlbumSetPage extends Fragment {
             }
 
         });
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startAlbumPage(gridAdapter.getItem(position).bucketID,
-                        gridAdapter.getItem(position).bucketDisplayName);
-            }
-
-        });
+        viewDelegate.setGridViewAdapter(gridAdapter);
     }
 
     private void startAlbumPage(int bucket, String name) {

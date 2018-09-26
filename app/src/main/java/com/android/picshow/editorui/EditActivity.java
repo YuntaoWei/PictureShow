@@ -270,7 +270,6 @@ public class EditActivity extends Activity implements View.OnClickListener, View
         switch (view.getId()) {
 
             case R.id.edit_filter:
-                LogPrinter.i("ttt","edit_filter");
                 addFragment(BaseEditorManager.FILTER);
                 break;
 
