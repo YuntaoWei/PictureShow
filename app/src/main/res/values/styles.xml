@@ -9,7 +9,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AlbumActivity" parent = "@style/AppTheme">
+    <style name="AlbumActivity" parent="@style/AppTheme">
         <item name="android:homeAsUpIndicator">@drawable/ic_launcher_background</item>
     </style>
 
@@ -34,5 +34,9 @@
         <item name="android:windowBackground">@drawable/detail_dialog_background</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

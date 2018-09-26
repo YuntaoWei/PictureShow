@@ -116,7 +116,7 @@ public class PicPopupWindow {
 	/*
 	 * get a PopupWindow instance
 	 */
-	public static PicPopupWindow getTanyuPopupWindow(Context context) {
+	public static PicPopupWindow getPicPopupWindow(Context context) {
 		return new PicPopupWindow(context);
 	}
 

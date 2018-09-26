@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.android.picshow.R;
-import com.android.picshow.edit.editor.filters.NewFilters;
+import com.android.picshow.editor.filters.NewFilters;
 import com.android.picshow.utils.MediaSetUtils;
 
 /**

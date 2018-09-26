@@ -2,49 +2,41 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.picshow">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".app.PictureShowApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
-        android:theme="@style/AppTheme"
-        >
-        <activity android:name="com.android.picshow.app.PicShowActivity"
-            >
+        android:theme="@style/AppTheme">
+        <activity android:name=".app.PicShowActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".app.AlbumPage"></activity>
-
-        <activity android:name=".app.PhotoActivity"
-            android:theme="@style/PhotoPageActivity"
-            ></activity>
-
-        <activity android:name="com.android.picshow.edit.editorui.EditActivity"
-            android:screenOrientation="portrait"
-            />
-
-        <activity android:name=".app.FilterTestActivity"
-            android:screenOrientation="portrait"
+        <activity android:name=".app.AlbumPage" />
+        <activity
+            android:name=".app.PhotoActivity"
+            android:theme="@style/PhotoPageActivity" />
+        <activity
+            android:name=".editorui.EditActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".app.FilterTestActivity"
             android:label="@string/filter_test"
-            >
-
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
     </application>
 

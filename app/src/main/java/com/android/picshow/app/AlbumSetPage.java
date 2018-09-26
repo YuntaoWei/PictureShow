@@ -17,10 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.picshow.R;
-import com.android.picshow.data.Album;
-import com.android.picshow.data.AlbumSetDataLoader;
-import com.android.picshow.data.GlideApp;
-import com.android.picshow.data.LoadListener;
+import com.android.picshow.model.Album;
+import com.android.picshow.model.AlbumSetDataLoader;
+import com.android.picshow.model.GlideApp;
+import com.android.picshow.model.LoadListener;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;

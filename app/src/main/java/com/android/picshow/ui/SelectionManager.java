@@ -4,8 +4,9 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.android.picshow.data.Path;
-import com.android.picshow.data.PhotoItem;
+import com.android.picshow.model.Path;
+import com.android.picshow.model.PhotoItem;
+import com.android.picshow.model.SimpleMediaItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ public class SelectionManager {
         return selectedPath.size();
     }
 
-    public ArrayList<Uri> getSelectItems() {
+    public ArrayList<SimpleMediaItem> getSelectItems() {
         if(selectedPath.size() > 100)
             return null;
 
@@ -103,8 +104,8 @@ public class SelectionManager {
 
     }
 
-    private ArrayList<Uri> getUris() {
-        ArrayList<Uri> uris = new ArrayList<>();
+    private ArrayList<SimpleMediaItem> getUris() {
+        ArrayList<SimpleMediaItem> uris = new ArrayList<>();
         for (Path p : selectedPath.values()
              ) {
             Uri u = null;
@@ -113,7 +114,7 @@ public class SelectionManager {
             } else {
                 u = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, p.ID);
             }
-            uris.add(u);
+            uris.add(new SimpleMediaItem(u, true, null));
         }
 
         return uris;

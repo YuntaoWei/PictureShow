@@ -198,7 +198,7 @@ void mapping(JNIEnv *env, jintArray image, int x, int y, double max_dist,
                             getRedColor(i2, j), getRedColor(i2, j1),
                             getRedColor(i2, j2)};
 
-            double A_B[4] = {(A[0] * redB[0] + A[1] * redB[4] + A[2] * redB[8]
+            long A_B[4] = {(A[0] * redB[0] + A[1] * redB[4] + A[2] * redB[8]
                               + A[3] * redB[12]), (A[0] * redB[1] + A[1] * redB[5]
                                                    + A[2] * redB[9] + A[3] * redB[13]),
                              (A[0] * redB[2]
@@ -221,7 +221,7 @@ void mapping(JNIEnv *env, jintArray image, int x, int y, double max_dist,
                                                                          j2), getGreenColor(i2, _j),
                               getGreenColor(i2, j),
                               getGreenColor(i2, j1), getGreenColor(i2, j2)};
-            double gA_B[4] = {(A[0] * greenB[0] + A[1] * greenB[4]
+            long gA_B[4] = {(A[0] * greenB[0] + A[1] * greenB[4]
                                + A[2] * greenB[8] + A[3] * greenB[12]), (A[0] * greenB[1]
                                                                          + A[1] * greenB[5] +
                                                                          A[2] * greenB[9] +
@@ -243,7 +243,7 @@ void mapping(JNIEnv *env, jintArray image, int x, int y, double max_dist,
                              getBlueColor(i2, _j), getBlueColor(i2, j), getBlueColor(i2,
                                                                                      j1),
                              getBlueColor(i2, j2)};
-            double bA_B[4] = {(A[0] * blueB[0] + A[1] * blueB[4]
+            long bA_B[4] = {(A[0] * blueB[0] + A[1] * blueB[4]
                                + A[2] * blueB[8] + A[3] * blueB[12]), (A[0] * blueB[1]
                                                                        + A[1] * blueB[5] +
                                                                        A[2] * blueB[9] +

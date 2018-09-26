@@ -26,10 +26,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.picshow.R;
-import com.android.picshow.data.Album;
-import com.android.picshow.data.PhotoItem;
-import com.android.picshow.edit.editor.BaseEditorManager;
-import com.android.picshow.edit.editorui.EditActivity;
+import com.android.picshow.model.Album;
+import com.android.picshow.model.PhotoItem;
+import com.android.picshow.model.SimpleMediaItem;
+import com.android.picshow.editor.BaseEditorManager;
+import com.android.picshow.editorui.EditActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -189,32 +190,30 @@ public class PicShowUtils {
 
     }
 
-    public static void shareItem(Context ctx, Uri uri, boolean image) {
+    public static void shareItem(Context ctx, SimpleMediaItem item) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setType(image ? "image/jpeg" : "video/*");
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setType(item.isImage ? "image/jpeg" : "video/*");
+        intent.putExtra(Intent.EXTRA_STREAM, item.itemUrl);
         ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.share)));
     }
 
-    public static void editItem(Context ctx, Uri uri, boolean image) {
+    public static void editItem(Context ctx, SimpleMediaItem item) {
 
-        if(image) {
+        if(item.isImage) {
             Intent intent = new Intent(ctx, EditActivity.class);
-
-            intent.putExtra(BaseEditorManager.SRC_PIC_PATH, MediaSetUtils.uriToPath(ctx, uri));
-
+            intent.putExtra(BaseEditorManager.SRC_PIC_PATH, MediaSetUtils.uriToPath(ctx, item.itemUrl));
             ctx.startActivity(intent);
         } else {
             Intent intent = new Intent(Intent.ACTION_EDIT);
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            intent.setDataAndType(uri, "video/*");
+            intent.setDataAndType(item.itemUrl, "video/*");
             ctx.startActivity(Intent.createChooser(intent, ctx.getString(R.string.edit)));
         }
     }
 
-    public static boolean deleteItem(Context ctx, Uri uri, boolean image) {
-        Cursor c = ctx.getContentResolver().query(uri,
+    public static boolean deleteItem(Context ctx, SimpleMediaItem item) {
+        Cursor c = ctx.getContentResolver().query(item.itemUrl,
                 new String[]{}, null, null, null);
         String path = null;
         if(c != null) {
@@ -222,7 +221,7 @@ public class PicShowUtils {
                 path = c.getString(0);
             }
         }
-        int row = ctx.getContentResolver().delete(uri, null, null);
+        int row = ctx.getContentResolver().delete(item.itemUrl, null, null);
         if(row > 0 && path != null) {
             File f = new File(path);
             if(f.exists())
@@ -418,6 +417,10 @@ public class PicShowUtils {
             e.printStackTrace();
         }
         return infos;
+    }
+
+    public static void showPopupDialog(Context ctx) {
+
     }
 
 

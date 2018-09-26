@@ -8,9 +8,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import com.android.picshow.data.Album;
-import com.android.picshow.data.PhotoItem;
-import com.android.picshow.data.SortCursor;
+import com.android.picshow.model.Album;
+import com.android.picshow.model.PhotoItem;
+import com.android.picshow.model.SortCursor;
 
 import java.util.ArrayList;
 import java.util.HashMap;

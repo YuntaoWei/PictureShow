@@ -17,11 +17,12 @@ import android.widget.GridView;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.TimeLineAdapter;
-import com.android.picshow.data.GlideApp;
-import com.android.picshow.data.LoadListener;
-import com.android.picshow.data.Path;
-import com.android.picshow.data.PhotoItem;
-import com.android.picshow.data.TimeLinePageDataLoader;
+import com.android.picshow.model.GlideApp;
+import com.android.picshow.model.LoadListener;
+import com.android.picshow.model.Path;
+import com.android.picshow.model.PhotoItem;
+import com.android.picshow.model.TimeLinePageDataLoader;
+import com.android.picshow.test.Activitya;
 import com.android.picshow.ui.MenuExecutor;
 import com.android.picshow.ui.SelectionManager;
 import com.android.picshow.utils.LogPrinter;
@@ -29,6 +30,8 @@ import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PicShowUtils;
 
 import java.util.List;
+
+import static com.android.picshow.test.Activitya.TEST_DEBUG;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -258,7 +261,7 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
                     case R.id.delete:
                         menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE,
-                                selectionManager.getSelectItems(), true, excuteListener);
+                                selectionManager.getSelectItems(), excuteListener);
                         break;
 
                     case R.id.more:
@@ -273,12 +276,12 @@ public class TimeLinePage extends Fragment implements AdapterView.OnItemClickLis
 
                     case R.id.edit:
                         menuExecutor.execute(MenuExecutor.MENU_ACTION_EDIT,
-                                selectionManager.getSelectItems(), true, excuteListener);
+                                selectionManager.getSelectItems(), excuteListener);
                         break;
 
                     case R.id.share:
                         menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE,
-                                selectionManager.getSelectItems(), true, excuteListener);
+                                selectionManager.getSelectItems(), excuteListener);
                         break;
 
 

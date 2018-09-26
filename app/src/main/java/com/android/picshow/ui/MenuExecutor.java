@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.android.picshow.R;
+import com.android.picshow.model.SimpleMediaItem;
+import com.android.picshow.utils.PhotoPageUtils;
 import com.android.picshow.utils.PicShowUtils;
 
 import java.util.ArrayList;
@@ -42,13 +44,11 @@ public class MenuExecutor {
     private class ExecuteTask extends AsyncTask<Integer, Void, Void> {
 
         private ExcuteListener l;
-        private ArrayList<Uri> uris;
-        private boolean image;
+        private ArrayList<SimpleMediaItem> uris;
 
-        public ExecuteTask(ArrayList<Uri> u, ExcuteListener l, boolean image) {
+        public ExecuteTask(ArrayList<SimpleMediaItem> u, ExcuteListener l) {
             uris = u;
             this.l = l;
-            this.image = image;
         }
 
         @Override
@@ -62,30 +62,30 @@ public class MenuExecutor {
             switch (integers[0]) {
                 case MENU_ACTION_DELETE :
                     if(uris.size() == 1) {
-                        PicShowUtils.deleteItem(mContext, uris.get(0), true);
+                        PicShowUtils.deleteItem(mContext, uris.get(0));
                     } else {
                         ContentResolver cr = mContext.getContentResolver();
-                        for (Uri u : uris
+                        for (SimpleMediaItem u : uris
                                 ) {
-                            cr.delete(u, null, null);
+                            cr.delete(u.itemUrl, null, null);
                         }
                     }
                     break;
 
                 case MENU_ACTION_SHARE :
                     if(uris.size() == 1) {
-                        PicShowUtils.shareItem(mContext, uris.get(0), true);
+                        PicShowUtils.shareItem(mContext, uris.get(0));
                     } else {
-                        PicShowUtils.shareItems(mContext, uris, true);
+                        PicShowUtils.shareItems(mContext, PhotoPageUtils.mediaItem2Uris(uris), true);
                     }
                     break;
 
                 case MENU_ACTION_EDIT :
-                    PicShowUtils.editItem(mContext, uris.get(0), image);
+                    PicShowUtils.editItem(mContext, uris.get(0));
                     break;
 
                 case MENU_ACTION_RENAME :
-                    showConfirmDialog(uris.get(0), image);
+                    showConfirmDialog(uris.get(0));
                     break;
 
                 default:
@@ -110,13 +110,13 @@ public class MenuExecutor {
 
     }
 
-    public void execute(int action, ArrayList<Uri> u, boolean image, ExcuteListener l) {
-        ExecuteTask deleteTask = new ExecuteTask(u, l, image);
+    public void execute(int action, ArrayList<SimpleMediaItem> u, ExcuteListener l) {
+        ExecuteTask deleteTask = new ExecuteTask(u, l);
         deleteTask.execute(action);
         switch (action) {
             case MENU_ACTION_DELETE :
                 if(u.size() == 1) {
-                    PicShowUtils.deleteItem(mContext, u.get(0), image);
+                    PicShowUtils.deleteItem(mContext, u.get(0));
                 } else {
                     deleteTask.execute(action);
                 }
@@ -124,25 +124,25 @@ public class MenuExecutor {
 
             case MENU_ACTION_SHARE :
                 if(u.size() == 1) {
-                    PicShowUtils.shareItem(mContext, u.get(0), image);
+                    PicShowUtils.shareItem(mContext, u.get(0));
                 } else {
 
                 }
                 break;
 
             case MENU_ACTION_EDIT :
-                PicShowUtils.editItem(mContext, u.get(0), image);
+                PicShowUtils.editItem(mContext, u.get(0));
                 break;
 
             case MENU_ACTION_RENAME :
-                showConfirmDialog(u.get(0), image);
+                showConfirmDialog(u.get(0));
                 break;
 
             default:
         }
     }
 
-    private void showConfirmDialog(final Uri u, final boolean image) {
+    private void showConfirmDialog(final SimpleMediaItem u) {
         ConfirmDialog confirmDialog = ConfirmDialog.getInstance(mContext);
         confirmDialog.setTitle(R.string.rename);
         confirmDialog.setView(R.layout.editable_dialog_layout, R.id.edit_able);
@@ -150,7 +150,7 @@ public class MenuExecutor {
 
             @Override
             public void onClick(DialogInterface dialogInterface, int which, String editable) {
-                PicShowUtils.renameItem(mContext, u, image, editable);
+                PicShowUtils.renameItem(mContext, u.itemUrl, u.isImage, editable);
             }
 
         });

@@ -14,10 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.android.picshow.R;
-import com.android.picshow.data.GlideApp;
-import com.android.picshow.data.PhotoItem;
+import com.android.picshow.model.GlideApp;
+import com.android.picshow.model.PhotoItem;
+import com.android.picshow.presenter.BaseFragment;
 import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
+import com.android.picshow.view.fragment.PhotoViewFragmentDelegate;
 import com.bumptech.glide.load.DecodeFormat;
 import com.github.chrisbanes.photoview.PhotoView;
 
@@ -27,7 +29,7 @@ import com.github.chrisbanes.photoview.PhotoView;
  * blog:http://blog.csdn.net/qq_17541215
  */
 
-public class PhotoViewFragment extends Fragment {
+public class PhotoViewFragment extends BaseFragment<PhotoViewFragmentDelegate> implements View.OnClickListener {
 
     private static final String TAG = "PhotoViewFragment";
 
@@ -38,8 +40,6 @@ public class PhotoViewFragment extends Fragment {
     private String currentPath;
     private static final int INVALID = -1;
     private static final String CURRENT_POSITION = "current_position";
-    private PhotoView mPhotoView;
-    private ImageView videoIcon;
 
     public PhotoViewFragment() {}
 
@@ -68,24 +68,17 @@ public class PhotoViewFragment extends Fragment {
         init();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.picshow_photo_page_item, null);
-    }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView();
-        GlideApp.with(this)
-                .load(currentPath)
-                .format(DecodeFormat.PREFER_ARGB_8888)
-                .into(mPhotoView);
-        if(type == PhotoItem.TYPE_VIDEO)
-            videoIcon.setVisibility(View.VISIBLE);
-        else
-            videoIcon.setVisibility(View.GONE);
+        viewDelegate.showBitmap(currentPath);
+        viewDelegate.setVideoIconVisibility(type == PhotoItem.TYPE_VIDEO ? true : false);
+    }
+
+    @Override
+    protected void bindEvenListener() {
+        super.bindEvenListener();
+        viewDelegate.setOnClickListener(this, R.id.photo, R.id.videoIcon);
     }
 
     private void init() {
@@ -98,22 +91,15 @@ public class PhotoViewFragment extends Fragment {
                 + "    currentPath:" + currentPath);
     }
 
-    private void initView() {
-        mPhotoView = getView().findViewById(R.id.photo);
-        videoIcon = getView().findViewById(R.id.videoIcon);
+    @Override
+    public void onDestroy() {
+        viewDelegate.freeSource(this);
+        super.onDestroy();
+    }
 
-        videoIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playVideo();
-            }
-        });
-        mPhotoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((PhotoActivity)getActivity()).toggleFullScreen();
-            }
-        });
+    @Override
+    protected Class getDelegateClass() {
+        return PhotoViewFragmentDelegate.class;
     }
 
     private void playVideo() {
@@ -126,29 +112,18 @@ public class PhotoViewFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
+    public void onClick(View v) {
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        LogPrinter.i(TAG, "onPause.");
-    }
+        switch (v.getId()) {
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        GlideApp.with(this).onDestroy();
-    }
+            case R.id.photo:
+                ((PhotoActivity)getActivity()).toggleFullScreen();
+                break;
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if(mPhotoView != null) {
-            GlideApp.with(this).clear(mPhotoView);
-            mPhotoView = null;
+            case R.id.videoIcon:
+                playVideo();
+                break;
         }
-    }
 
+    }
 }

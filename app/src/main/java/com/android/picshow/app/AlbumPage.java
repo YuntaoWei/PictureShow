@@ -15,11 +15,11 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import com.android.picshow.R;
-import com.android.picshow.data.AlbumDataLoader;
-import com.android.picshow.data.GlideApp;
-import com.android.picshow.data.LoadListener;
-import com.android.picshow.data.Path;
-import com.android.picshow.data.PhotoItem;
+import com.android.picshow.model.AlbumDataLoader;
+import com.android.picshow.model.GlideApp;
+import com.android.picshow.model.LoadListener;
+import com.android.picshow.model.Path;
+import com.android.picshow.model.PhotoItem;
 import com.android.picshow.adapter.TimeLineAdapter;
 import com.android.picshow.ui.MenuExecutor;
 import com.android.picshow.ui.SelectionManager;
@@ -228,7 +228,7 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
 
                     case R.id.delete:
                         menuExecutor.execute(MenuExecutor.MENU_ACTION_DELETE,
-                                selectionManager.getSelectItems(), true, excuteListener);
+                                selectionManager.getSelectItems(), excuteListener);
                         break;
 
                     case R.id.more:
@@ -243,12 +243,12 @@ public class AlbumPage extends AppCompatActivity implements AdapterView.OnItemCl
 
                     case R.id.edit:
                         menuExecutor.execute(MenuExecutor.MENU_ACTION_EDIT,
-                                selectionManager.getSelectItems(), true, excuteListener);
+                                selectionManager.getSelectItems(), excuteListener);
                         break;
 
                     case R.id.share:
                         menuExecutor.execute(MenuExecutor.MENU_ACTION_SHARE,
-                                selectionManager.getSelectItems(), true, excuteListener);
+                                selectionManager.getSelectItems(), excuteListener);
                         break;
 
 

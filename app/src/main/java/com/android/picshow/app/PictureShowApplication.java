@@ -2,7 +2,7 @@ package com.android.picshow.app;
 
 import android.app.Application;
 
-import com.android.picshow.data.DataManager;
+import com.android.picshow.model.DataManager;
 
 /**
  * Created by yuntao.wei on 2017/11/28.

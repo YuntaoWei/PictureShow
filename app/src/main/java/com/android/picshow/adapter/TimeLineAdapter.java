@@ -11,8 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.picshow.R;
-import com.android.picshow.data.GlideApp;
-import com.android.picshow.data.PhotoItem;
+import com.android.picshow.model.GlideApp;
+import com.android.picshow.model.PhotoItem;
 import com.android.picshow.ui.SelectionManager;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.signature.MediaStoreSignature;
