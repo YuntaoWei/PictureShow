@@ -91,5 +91,4 @@ public class SortCursor extends CursorWrapper implements Comparator<SortCursor.S
     public int getPosition() {
         return mPos;
     }
-
 }

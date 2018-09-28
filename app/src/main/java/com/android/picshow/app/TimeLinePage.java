@@ -240,6 +240,8 @@ public class TimeLinePage extends BaseFragment<TimeLinePageDelegate> implements 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if(!gridAdapter.getSelectState()) {
+            PhotoItem item = gridAdapter.getItem(position);
+            updateItem(view, selectionManager.togglePath(position, item.toPath()));
             gridAdapter.setSelectState(true);
             viewDelegate.setBottomViewVisiblity(true);
         } else {

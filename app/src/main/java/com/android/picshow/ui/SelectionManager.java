@@ -3,6 +3,7 @@ package com.android.picshow.ui;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.SparseArray;
 
 import com.android.picshow.model.Path;
 import com.android.picshow.model.PhotoItem;
@@ -20,12 +21,14 @@ import java.util.Set;
 
 public class SelectionManager {
 
-    private HashMap<String, Path> selectedPath;
+    //private HashMap<String, Path> selectedPath;
+    private SparseArray<Path> selectedPath;
     private SelectionListener selectionListener;
     private boolean selectionMode;
 
     public SelectionManager() {
-        selectedPath = new HashMap<>();
+        selectedPath = new SparseArray<>();
+        //selectedPath = new HashMap<>();
     }
 
     public interface SelectionListener {
@@ -37,20 +40,21 @@ public class SelectionManager {
     }
 
     public int getSelectPostion() {
-        Set<String> keys = selectedPath.keySet();
-        return Integer.valueOf(keys.iterator().next());
+        //Set<String> keys = selectedPath.keySet();
+        //return Integer.valueOf(keys.iterator().next());
+        return selectedPath.keyAt(0);
     }
 
     public boolean togglePath(int position, Path p) {
-        if(selectedPath.get(position + "") != null) {
-            selectedPath.remove(position + "");
+        if(selectedPath.get(position) != null) {
+            selectedPath.remove(position);
             if(selectionListener != null)
                 selectionListener.onSelectionChange(p, false);
             if(selectedPath.size() == 0)
                 exitSelectionMode();
             return false;
         } else {
-            selectedPath.put(position + "", p);
+            selectedPath.put(position, p);
             if(selectionListener != null)
                 selectionListener.onSelectionChange(p, true);
             if(selectedPath.size() == 1)
@@ -60,7 +64,7 @@ public class SelectionManager {
     }
 
     public boolean isSelected(int postion) {
-        return selectedPath == null ? false : selectedPath.get(postion + "") != null;
+        return selectedPath == null ? false : selectedPath.get(postion) != null;
     }
 
     private void enterSelectionMode() {
@@ -105,7 +109,22 @@ public class SelectionManager {
 
     private ArrayList<SimpleMediaItem> getUris() {
         ArrayList<SimpleMediaItem> uris = new ArrayList<>();
-        for (Path p : selectedPath.values()
+        int size = selectedPath.size(), i = 0;
+        Path p = null;
+        Uri u = null;
+        for(;i < size; i++) {
+            p = selectedPath.get(i);
+            if(null == p)
+                continue;
+
+            if(p.mType == PhotoItem.TYPE_GIF || p.mType == PhotoItem.TYPE_IMAGE) {
+                u = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, p.ID);
+            } else {
+                u = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, p.ID);
+            }
+            uris.add(new SimpleMediaItem(u, true, null));
+        }
+        /*for (Path p : selectedPath.values()
              ) {
             Uri u = null;
             if(p.mType == PhotoItem.TYPE_GIF || p.mType == PhotoItem.TYPE_IMAGE) {
@@ -114,11 +133,9 @@ public class SelectionManager {
                 u = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, p.ID);
             }
             uris.add(new SimpleMediaItem(u, true, null));
-        }
+        }*/
 
         return uris;
     }
-
-
 
 }

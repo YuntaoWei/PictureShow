@@ -178,7 +178,10 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        Cursor c = photoPageAdapter.getCursor();
+        if(c != null && !c.isClosed()) {
+            c.close();
+        }
     }
 
     @Override
