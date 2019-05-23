@@ -6,7 +6,7 @@
     android:background="@color/common_bg">
 
 
-    <com.tanyu.gallery3d.editor.mosaic.DrawMosaicView
+    <com.android.picshow.editor.mosaic.DrawMosaicView
         android:id="@+id/mosaic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

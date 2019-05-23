@@ -294,7 +294,7 @@ public class DrawMosaicView extends ViewGroup {
     }
 
     private void updatePathMosaic() {
-        if (mImageWidth <= 0 || mImageHeight <= 0) {
+        if (mImageWidth <= 0 || mImageHeight <= 0 || null == bmCoverLayer) {
             return;
         }
 

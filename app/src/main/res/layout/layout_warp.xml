@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.tanyu.gallery3d.editor.warp.WarpView
+        <com.android.picshow.editor.warp.WarpView
             android:id="@+id/warp_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
