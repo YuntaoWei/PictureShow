@@ -24,6 +24,7 @@ import com.android.picshow.utils.LogPrinter;
 import com.android.picshow.utils.MediaSetUtils;
 import com.android.picshow.utils.PhotoPageUtils;
 import com.android.picshow.utils.PicShowUtils;
+import com.android.picshow.utils.QuickSortUtil;
 import com.android.picshow.view.activity.PhotoActivityDelegate;
 
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
 
     private static final String TAG = "PhotoActivity";
 
-    private int currentID;
+    private long currentID;
+    private int currentIndex;
     private int bucketID;
     private PhotoPageAdapter photoPageAdapter;
     private PhotoDataLoader mLoader;
@@ -59,7 +61,7 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
 
     private void init() {
         Intent intent = getIntent();
-        currentID = intent.getIntExtra(MediaSetUtils.PHOTO_ID, PhotoDataLoader.INVALID);
+        currentID = intent.getLongExtra(MediaSetUtils.PHOTO_ID, PhotoDataLoader.INVALID);
         bucketID = intent.getIntExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
         mLoader = new PhotoDataLoader(getApplication(), bucketID, this);
         mainHandler = new Handler() {
@@ -69,7 +71,7 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
                 switch (msg.what) {
                     case UPDATE:
                         viewDelegate.setPagerAdapter(photoPageAdapter);
-                        viewDelegate.switchPage(currentID);
+                        viewDelegate.switchPage(currentIndex);
                         break;
 
                     case ENTER_FULL_SCREEN:
@@ -120,7 +122,7 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
                     return;
 
                 if(photoPageAdapter == null) return;
-                Cursor c = (Cursor)photoPageAdapter.getDataItem(currentID);
+                Cursor c = (Cursor)photoPageAdapter.getDataItem(currentIndex);
                 ArrayList<SimpleMediaItem> items = new ArrayList<>();
                 items.add(PhotoPageUtils.getUriFromCursor(c));
 
@@ -194,7 +196,8 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
 
     @Override
     public void loadFinish(Cursor cursor) {
-        LogPrinter.i(TAG, "loadFinish:" + cursor.getCount());
+        currentIndex = QuickSortUtil.quickGetPosition(cursor, currentID);
+        LogPrinter.i(TAG, "loadFinish:" + cursor.getCount() + "   " + currentIndex + "   " + currentID);
         photoPageAdapter = new PhotoPageAdapter(getApplicationContext(), getSupportFragmentManager(), cursor);
         mainHandler.sendEmptyMessage(UPDATE);
     }
@@ -203,7 +206,7 @@ public class PhotoActivity extends BaseActivity<PhotoActivityDelegate> implement
     public void onClick(View v) {
         if(photoPageAdapter == null) return;
 
-        Cursor c = (Cursor)photoPageAdapter.getDataItem(currentID);
+        Cursor c = (Cursor)photoPageAdapter.getDataItem(currentIndex);
         ArrayList<SimpleMediaItem> list = new ArrayList<>();
         list.add(PhotoPageUtils.getUriFromCursor(c));
 

@@ -9,6 +9,7 @@ import com.android.picshow.adapter.PhotoPageAdapter;
 import com.android.picshow.ui.PicPopupWindow;
 import com.android.picshow.utils.ApiHelper;
 import com.android.picshow.utils.PicShowUtils;
+import com.android.picshow.utils.QuickSortUtil;
 import com.android.picshow.view.AppDelegate;
 
 public class PhotoActivityDelegate extends AppDelegate {
@@ -48,11 +49,11 @@ public class PhotoActivityDelegate extends AppDelegate {
         mPager.setAdapter(adapter);
     }
 
-    public void switchPage(int pageIndex) {
+    public void switchPage(int id) {
         if(mPager == null) {
             mPager = getView(R.id.photo_pager);
         }
-        mPager.setCurrentItem(pageIndex);
+        mPager.setCurrentItem(id);
     }
 
     public void enterFullScreen() {

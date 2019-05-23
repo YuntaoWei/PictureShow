@@ -1,19 +1,13 @@
 package com.android.picshow.app;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.GridView;
 
 import com.android.picshow.R;
 import com.android.picshow.adapter.TimeLineAdapter;
@@ -23,7 +17,6 @@ import com.android.picshow.model.Path;
 import com.android.picshow.model.PhotoItem;
 import com.android.picshow.model.TimeLinePageDataLoader;
 import com.android.picshow.presenter.BaseFragment;
-import com.android.picshow.test.Activitya;
 import com.android.picshow.ui.MenuExecutor;
 import com.android.picshow.ui.SelectionManager;
 import com.android.picshow.utils.LogPrinter;
@@ -32,8 +25,6 @@ import com.android.picshow.utils.PicShowUtils;
 import com.android.picshow.view.fragment.TimeLinePageDelegate;
 
 import java.util.List;
-
-import static com.android.picshow.test.Activitya.TEST_DEBUG;
 
 /**
  * Created by yuntao.wei on 2017/11/28.
@@ -222,9 +213,12 @@ public class TimeLinePage extends BaseFragment<TimeLinePageDelegate> implements 
             PhotoItem item = gridAdapter.getItem(position);
             updateItem(view, selectionManager.togglePath(position, item.toPath()));
         } else {
+            String path = gridAdapter.getItem(position).getPath();
+            LogPrinter.i("test", "position : " + position + " path : " +
+                    path + "   bucket id : " + MediaSetUtils.CAMERA_BUCKET_ID + "  " + "  " + id);
             Intent intent = new Intent(getActivity(), PhotoActivity.class);
-            intent.putExtra(MediaSetUtils.PHOTO_ID, position);
-            intent.putExtra(MediaSetUtils.PHOTO_PATH, gridAdapter.getItem(position).getPath());
+            intent.putExtra(MediaSetUtils.PHOTO_ID, id);
+            intent.putExtra(MediaSetUtils.PHOTO_PATH, path);
             intent.putExtra(MediaSetUtils.BUCKET, MediaSetUtils.CAMERA_BUCKET_ID);
             startActivity(intent);
         }
